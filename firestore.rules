@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Actuator commands and state are only available to authenticated operators.
+    match /actuators/{document} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /devices/{deviceId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /events/{eventId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // No blanket allow: all documents not listed above are denied by default.
+  }
+}

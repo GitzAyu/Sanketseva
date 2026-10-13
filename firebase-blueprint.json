@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "Actuators": {
+      "title": "Actuators",
+      "description": "Hardware actuator relay states for gas valve, mains power cut, ventilation fan, water shower, and alarm buzzer",
+      "type": "object",
+      "properties": {
+        "valve": {
+          "type": "string",
+          "enum": ["OPEN", "CLOSED"],
+          "description": "LPG fuel solenoid valve status"
+        },
+        "powerCut": {
+          "type": "string",
+          "enum": ["ON", "OFF"],
+          "description": "Mains electricity switch status (ON = 230V Live, OFF = 0V Cut)"
+        },
+        "fan": {
+          "type": "string",
+          "enum": ["ON", "OFF"],
+          "description": "Exhaust fan relay status"
+        },
+        "buzzer": {
+          "type": "string",
+          "enum": ["ON", "OFF"],
+          "description": "Audible safety buzzer relay status"
+        },
+        "extinguisher": {
+          "type": "string",
+          "enum": ["ON", "OFF"],
+          "description": "Fire suppression water shower deluge relay status"
+        },
+        "updatedAt": {
+          "type": "number",
+          "description": "Timestamp in milliseconds when actuator states were last updated"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "Operator identifier or automated safety interlock"
+        }
+      },
+      "required": ["valve", "powerCut", "fan", "buzzer", "extinguisher", "updatedAt"]
+    },
+    "DeviceTelemetry": {
+      "title": "DeviceTelemetry",
+      "description": "Real-time sensor telemetry and device state",
+      "type": "object",
+      "properties": {
+        "deviceId": { "type": "string" },
+        "gas": { "type": "number" },
+        "smoke": { "type": "number" },
+        "temperature": { "type": "number" },
+        "humidity": { "type": "number" },
+        "flame": { "type": "boolean" },
+        "updatedAt": { "type": "number" },
+        "safety": {
+          "type": "object",
+          "description": "Operator-configured safety thresholds and automatic cutoff policies",
+          "properties": {
+            "gasWarningThreshold": { "type": "number" },
+            "gasDangerThreshold": { "type": "number" },
+            "smokeDangerThreshold": { "type": "number" },
+            "temperatureWarningThreshold": { "type": "number" },
+            "temperatureDangerThreshold": { "type": "number" },
+            "autoPowerCutOnLeak": { "type": "boolean" },
+            "autoPowerCutOnFire": { "type": "boolean" },
+            "autoPowerCutOnSmoke": { "type": "boolean" },
+            "updatedAt": { "type": "number" }
+          }
+        }
+      },
+      "required": ["deviceId", "gas", "smoke", "temperature", "humidity", "flame", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/actuators/current": {
+      "schema": "Actuators",
+      "description": "Live hardware actuator relay states synced with ESP32 and UI controls"
+    },
+    "/devices/{deviceId}": {
+      "schema": "DeviceTelemetry",
+      "description": "Diagnostic telemetry for IoT edge devices"
+    }
+  }
+}

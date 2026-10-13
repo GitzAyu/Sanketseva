@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --color-quantix-bg: #f8fafc;
+    --color-quantix-surface: #ffffff;
+    --color-quantix-card: #ffffff;
+    --color-quantix-border: #e2e8f0;
+    --color-quantix-text: #0f172a;
+    --color-quantix-muted: #64748b;
+  }
+
+  .dark {
+    --color-quantix-bg: #090d16;
+    --color-quantix-surface: #0f172a;
+    --color-quantix-card: #141e33;
+    --color-quantix-border: #1e293b;
+    --color-quantix-text: #f8fafc;
+    --color-quantix-muted: #94a3b8;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-quantix-bg);
+    color: var(--color-quantix-text);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+}
+
+/* Background Grids */
+.quantix-bg {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(circle at 50% 12%, rgba(225, 29, 72, 0.05) 0%, transparent 65%),
+    linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+}
+
+.dark .quantix-bg, .dark.quantix-bg {
+  background-color: #090d16;
+  background-image: 
+    radial-gradient(circle at 50% 12%, rgba(225, 29, 72, 0.12) 0%, transparent 65%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+}
+
+/* Animations for Fan, Water Shower, Siren, Power Cut */
+@keyframes fan-spin-fast {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes water-drop-fall {
+  0% { transform: translateY(0) scaleY(0.7); opacity: 0; }
+  20% { opacity: 0.95; }
+  80% { opacity: 0.85; }
+  100% { transform: translateY(42px) scaleY(1.3); opacity: 0; }
+}
+
+@keyframes water-mist-spread {
+  0% { transform: scale(0.7) translateY(0); opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { transform: scale(1.2) translateY(10px); opacity: 0; }
+}
+
+@keyframes siren-ring {
+  0% { transform: scale(0.85); opacity: 0.85; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+
+@keyframes pipeline-gas-stream {
+  0% { transform: translateX(-15px); opacity: 0.1; }
+  50% { transform: translateX(35px); opacity: 0.9; }
+  100% { transform: translateX(35px); opacity: 0; }
+}
+
+@keyframes arc-spark-pulse {
+  0%, 100% { opacity: 0.2; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.1); filter: drop-shadow(0 0 8px #f59e0b); }
+}
+
+@keyframes emergency-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
+}
+
+.animate-fan-spin {
+  animation: fan-spin-fast 0.65s linear infinite;
+}
+
+.animate-water-drop-1 {
+  animation: water-drop-fall 0.85s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.animate-water-drop-2 {
+  animation: water-drop-fall 0.85s cubic-bezier(0.4, 0, 0.6, 1) infinite 0.22s;
+}
+.animate-water-drop-3 {
+  animation: water-drop-fall 0.85s cubic-bezier(0.4, 0, 0.6, 1) infinite 0.45s;
+}
+.animate-water-drop-4 {
+  animation: water-drop-fall 0.85s cubic-bezier(0.4, 0, 0.6, 1) infinite 0.62s;
+}
+
+.animate-water-mist {
+  animation: water-mist-spread 1.2s ease-out infinite;
+}
+
+.animate-siren-ring-1 {
+  animation: siren-ring 1.1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.animate-siren-ring-2 {
+  animation: siren-ring 1.1s cubic-bezier(0, 0.2, 0.8, 1) infinite 0.4s;
+}
+
+.animate-gas-stream {
+  animation: pipeline-gas-stream 1s linear infinite;
+}
+
+.animate-arc-spark {
+  animation: arc-spark-pulse 0.5s ease-in-out infinite;
+}
+
+.animate-emergency-border {
+  animation: emergency-glow 1.5s ease-in-out infinite;
+}
