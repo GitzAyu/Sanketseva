@@ -27,7 +27,7 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const {
     device,
-    hasLiveTelemetry,
+    hasRequiredSafetyTelemetry,
     systemMode,
     sensorHistory,
     events,
@@ -39,9 +39,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [showGuideModal, setShowGuideModal] = useState(false);
 
   const valveSafety = useMemo(() => {
-    if (!hasLiveTelemetry) return { allowed: false, reason: t.valveNeedsLiveReadings };
+    if (!hasRequiredSafetyTelemetry) return { allowed: false, reason: t.valveNeedsLiveReadings };
     return validateValveOpenRequest(device.sensors, device.safety);
-  }, [device.sensors, device.safety, hasLiveTelemetry, t.valveNeedsLiveReadings]);
+  }, [device.sensors, device.safety, hasRequiredSafetyTelemetry, t.valveNeedsLiveReadings]);
 
   const handleActuatorToggle = async (
     target: 'valve' | 'fan' | 'buzzer' | 'extinguisher' | 'powerCut',
@@ -204,7 +204,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* LPG Sensor */}
           <SensorCard
             type="gas"
-            isLive={hasLiveTelemetry}
+            isLive={device.sensors.gas.timestamp > 0}
             title={t.sensorGas}
             value={device.sensors.gas.value}
             unit="ADC"
@@ -229,7 +229,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Smoke Sensor */}
           <SensorCard
             type="smoke"
-            isLive={hasLiveTelemetry}
+            isLive={device.sensors.smoke.timestamp > 0}
             title={t.sensorSmoke}
             value={device.sensors.smoke.value}
             unit="PPM"
@@ -254,7 +254,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Fire Sensor */}
           <SensorCard
             type="flame"
-            isLive={hasLiveTelemetry}
+            isLive={device.sensors.flame.timestamp > 0}
             title={t.sensorFlame}
             value={device.sensors.flame.detected ? t.flameDetected : t.flameClear}
             statusText={device.sensors.flame.detected ? t.flameDetected : t.flameClear}
@@ -265,7 +265,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Room Temperature */}
           <SensorCard
             type="temperature"
-            isLive={hasLiveTelemetry}
+            isLive={device.sensors.temperature.timestamp > 0}
             title={t.sensorTemp}
             value={device.sensors.temperature.value}
             unit="°C"
@@ -290,7 +290,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Air Humidity */}
           <SensorCard
             type="humidity"
-            isLive={hasLiveTelemetry}
+            isLive={device.sensors.humidity.timestamp > 0}
             title={t.sensorHumidity}
             value={device.sensors.humidity.value}
             unit="%"
@@ -304,7 +304,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
       {/* 5. Live Gas & Smoke Trend Graph */}
       <section>
-        {hasLiveTelemetry ? (
+        {sensorHistory.length > 0 ? (
           <GasChart
             data={sensorHistory}
             warningThreshold={device.safety.gasWarningThreshold}

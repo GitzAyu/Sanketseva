@@ -19,7 +19,7 @@ import { eventLabel, severityLabel } from '../utils/eventLabels';
 export const Controls: React.FC = () => {
   const {
     device,
-    hasLiveTelemetry,
+    hasRequiredSafetyTelemetry,
     sendCommand,
     commandFeedback,
     clearCommandFeedback,
@@ -28,9 +28,9 @@ export const Controls: React.FC = () => {
   const { t } = useLanguage();
 
   const valveSafety = useMemo(() => {
-    if (!hasLiveTelemetry) return { allowed: false, reason: t.valveNeedsLiveReadings };
+    if (!hasRequiredSafetyTelemetry) return { allowed: false, reason: t.valveNeedsLiveReadings };
     return validateValveOpenRequest(device.sensors, device.safety);
-  }, [device.sensors, device.safety, hasLiveTelemetry, t.valveNeedsLiveReadings]);
+  }, [device.sensors, device.safety, hasRequiredSafetyTelemetry, t.valveNeedsLiveReadings]);
 
   const handleActuatorToggle = async (
     target: 'valve' | 'fan' | 'buzzer' | 'extinguisher' | 'powerCut',

@@ -7,7 +7,7 @@ import { TemperatureChart } from '../components/charts/TemperatureChart';
 import { HumidityChart } from '../components/charts/HumidityChart';
 
 export const Monitoring: React.FC = () => {
-  const { device, sensorHistory, isOnline, hasLiveTelemetry } = useDevice();
+  const { device, sensorHistory, isOnline } = useDevice();
   const { t } = useLanguage();
   const isPowerOn = device.actuators.powerCut.state === 'ON';
 
@@ -15,9 +15,10 @@ export const Monitoring: React.FC = () => {
     {
       name: t.sensorGas,
       purpose: t.gasSafeDesc,
-      value: hasLiveTelemetry ? `${device.sensors.gas.value} ADC` : t.waitingForSensors,
+      isLive: device.sensors.gas.timestamp > 0,
+      value: device.sensors.gas.timestamp > 0 ? `${device.sensors.gas.value} ADC` : t.waitingForSensors,
       limit: `${t.statusWarning}: ${device.safety.gasWarningThreshold} · ${t.statusDanger}: ${device.safety.gasDangerThreshold}`,
-      status: !hasLiveTelemetry ? t.waitingForSensors : device.sensors.gas.value >= device.safety.gasDangerThreshold
+      status: device.sensors.gas.timestamp <= 0 ? t.waitingForSensors : device.sensors.gas.value >= device.safety.gasDangerThreshold
         ? t.statusDanger
         : device.sensors.gas.value >= device.safety.gasWarningThreshold ? t.statusWarning : t.statusSafe,
       danger: device.sensors.gas.value >= device.safety.gasDangerThreshold,
@@ -26,9 +27,10 @@ export const Monitoring: React.FC = () => {
     {
       name: t.sensorSmoke,
       purpose: t.smokeSafeDesc,
-      value: hasLiveTelemetry ? `${device.sensors.smoke.value} PPM` : t.waitingForSensors,
+      isLive: device.sensors.smoke.timestamp > 0,
+      value: device.sensors.smoke.timestamp > 0 ? `${device.sensors.smoke.value} PPM` : t.waitingForSensors,
       limit: `${t.statusDanger}: ${device.safety.smokeDangerThreshold} PPM`,
-      status: !hasLiveTelemetry ? t.waitingForSensors : device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold
+      status: device.sensors.smoke.timestamp <= 0 ? t.waitingForSensors : device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold
         ? t.statusDanger
         : device.sensors.smoke.value >= 200 ? t.statusWarning : t.statusSafe,
       danger: device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold,
@@ -37,18 +39,20 @@ export const Monitoring: React.FC = () => {
     {
       name: t.sensorFlame,
       purpose: t.flameSafeDesc,
-      value: hasLiveTelemetry ? (device.sensors.flame.detected ? t.statusDetected : t.statusClear) : t.waitingForSensors,
+      isLive: device.sensors.flame.timestamp > 0,
+      value: device.sensors.flame.timestamp > 0 ? (device.sensors.flame.detected ? t.statusDetected : t.statusClear) : t.waitingForSensors,
       limit: t.statusClear,
-      status: !hasLiveTelemetry ? t.waitingForSensors : device.sensors.flame.detected ? t.statusDanger : t.statusSafe,
+      status: device.sensors.flame.timestamp <= 0 ? t.waitingForSensors : device.sensors.flame.detected ? t.statusDanger : t.statusSafe,
       danger: device.sensors.flame.detected,
       warning: false,
     },
     {
       name: t.sensorTemp,
       purpose: t.tempNormalDesc,
-      value: `${device.sensors.temperature.value} °C`,
+      isLive: device.sensors.temperature.timestamp > 0,
+      value: device.sensors.temperature.timestamp > 0 ? `${device.sensors.temperature.value} °C` : t.waitingForSensors,
       limit: `${t.statusWarning}: ${device.safety.temperatureWarningThreshold} °C · ${t.statusDanger}: ${device.safety.temperatureDangerThreshold} °C`,
-      status: device.sensors.temperature.value >= device.safety.temperatureDangerThreshold
+      status: device.sensors.temperature.timestamp <= 0 ? t.waitingForSensors : device.sensors.temperature.value >= device.safety.temperatureDangerThreshold
         ? t.statusDanger
         : device.sensors.temperature.value >= device.safety.temperatureWarningThreshold ? t.statusWarning : t.statusSafe,
       danger: device.sensors.temperature.value >= device.safety.temperatureDangerThreshold,
@@ -57,16 +61,15 @@ export const Monitoring: React.FC = () => {
     {
       name: t.sensorHumidity,
       purpose: t.sensorHumidityDesc,
-      value: `${device.sensors.humidity.value}%`,
+      isLive: device.sensors.humidity.timestamp > 0,
+      value: device.sensors.humidity.timestamp > 0 ? `${device.sensors.humidity.value}%` : t.waitingForSensors,
       limit: '20–90%',
-      status: t.statusComfortable,
+      status: device.sensors.humidity.timestamp > 0 ? t.statusComfortable : t.waitingForSensors,
       danger: false,
       warning: false,
     },
   ];
-  const visibleRows = hasLiveTelemetry
-    ? rows
-    : rows.map((row) => ({ ...row, value: t.waitingForSensors, status: t.waitingForSensors, danger: false, warning: false }));
+  const visibleRows = rows;
 
   return (
     <div className="space-y-5 max-w-7xl mx-auto pb-12">
@@ -121,7 +124,7 @@ export const Monitoring: React.FC = () => {
                   <td className="py-3 px-4 font-semibold tabular-nums">{row.value}</td>
                   <td className="py-3 px-4 text-slate-500 dark:text-slate-400">{row.limit}</td>
                   <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded-md text-[10px] font-bold ${!hasLiveTelemetry ? 'text-slate-600 bg-slate-100 dark:text-slate-300 dark:bg-slate-800' : row.danger ? 'text-red-700 bg-red-50 dark:text-red-300 dark:bg-red-950/40' : row.warning ? 'text-amber-700 bg-amber-50 dark:text-amber-300 dark:bg-amber-950/40' : 'text-emerald-700 bg-emerald-50 dark:text-emerald-300 dark:bg-emerald-950/40'}`}>
+                    <span className={`px-2 py-1 rounded-md text-[10px] font-bold ${!row.isLive ? 'text-slate-600 bg-slate-100 dark:text-slate-300 dark:bg-slate-800' : row.danger ? 'text-red-700 bg-red-50 dark:text-red-300 dark:bg-red-950/40' : row.warning ? 'text-amber-700 bg-amber-50 dark:text-amber-300 dark:bg-amber-950/40' : 'text-emerald-700 bg-emerald-50 dark:text-emerald-300 dark:bg-emerald-950/40'}`}>
                       {row.status}
                     </span>
                   </td>
@@ -133,7 +136,7 @@ export const Monitoring: React.FC = () => {
       </section>
 
       <section className="space-y-5">
-        {hasLiveTelemetry ? <>
+        {sensorHistory.length > 0 ? <>
           <GasChart data={sensorHistory} warningThreshold={device.safety.gasWarningThreshold} dangerThreshold={device.safety.gasDangerThreshold} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <TemperatureChart data={sensorHistory} warningThreshold={device.safety.temperatureWarningThreshold} />

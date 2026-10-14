@@ -66,11 +66,17 @@ export interface FirebaseActuatorPayload {
 
 export interface FirebaseTelemetryPayload {
   deviceId: string;
-  gas: number;
-  smoke: number;
-  temperature: number;
-  humidity: number;
-  flame: boolean;
+  available: { gas: boolean; smoke: boolean; temperature: boolean; humidity: boolean; flame: boolean };
+  gas?: number;
+  gasTimestamp?: number;
+  smoke?: number;
+  smokeTimestamp?: number;
+  temperature?: number;
+  temperatureTimestamp?: number;
+  humidity?: number;
+  humidityTimestamp?: number;
+  flame?: boolean;
+  flameTimestamp?: number;
   updatedAt: number;
 }
 
@@ -221,16 +227,57 @@ export function subscribeToFirebaseTelemetry(
       const sensors = device?.sensors;
       if (!sensors) return;
       const gas = Number(sensors.gas?.value);
+      const gasTimestamp = Number(sensors.gas?.timestamp);
       const smoke = Number(sensors.smoke?.value);
+      const smokeTimestamp = Number(sensors.smoke?.timestamp);
       const temperature = Number(sensors.temperature?.value);
+      const temperatureTimestamp = Number(sensors.temperature?.timestamp);
       const humidity = Number(sensors.humidity?.value);
+      const humidityTimestamp = Number(sensors.humidity?.timestamp);
       const flame = sensors.flame?.detected;
-      if (![gas, smoke, temperature, humidity].every(Number.isFinite) || typeof flame !== 'boolean') return;
-      const updatedAt = Math.max(
-        0,
-        ...Object.values(sensors as Record<string, { timestamp?: number }>).map((sensor) => Number(sensor?.timestamp) || 0)
-      );
-      onUpdate({ deviceId, gas, smoke, temperature, humidity, flame, updatedAt });
+      const flameTimestamp = Number(sensors.flame?.timestamp);
+
+      const payload: FirebaseTelemetryPayload = {
+        deviceId,
+        updatedAt: 0,
+        available: { gas: false, smoke: false, temperature: false, humidity: false, flame: false },
+      };
+      if (Number.isFinite(gas) && Number.isFinite(gasTimestamp) && gasTimestamp > 0) {
+        payload.gas = gas;
+        payload.gasTimestamp = gasTimestamp;
+        payload.available.gas = true;
+      }
+      if (Number.isFinite(smoke) && Number.isFinite(smokeTimestamp) && smokeTimestamp > 0) {
+        payload.smoke = smoke;
+        payload.smokeTimestamp = smokeTimestamp;
+        payload.available.smoke = true;
+      }
+      if (Number.isFinite(temperature) && Number.isFinite(temperatureTimestamp) && temperatureTimestamp > 0) {
+        payload.temperature = temperature;
+        payload.temperatureTimestamp = temperatureTimestamp;
+        payload.available.temperature = true;
+      }
+      if (Number.isFinite(humidity) && Number.isFinite(humidityTimestamp) && humidityTimestamp > 0) {
+        payload.humidity = humidity;
+        payload.humidityTimestamp = humidityTimestamp;
+        payload.available.humidity = true;
+      }
+      if (typeof flame === 'boolean' && Number.isFinite(flameTimestamp) && flameTimestamp > 0) {
+        payload.flame = flame;
+        payload.flameTimestamp = flameTimestamp;
+        payload.available.flame = true;
+      }
+
+      const timestamps = [
+        payload.available.gas ? gasTimestamp : 0,
+        payload.available.smoke ? smokeTimestamp : 0,
+        payload.available.temperature ? temperatureTimestamp : 0,
+        payload.available.humidity ? humidityTimestamp : 0,
+        payload.available.flame ? flameTimestamp : 0,
+      ].filter((timestamp) => Number.isFinite(timestamp) && timestamp > 0);
+      if (timestamps.length === 0) return;
+      payload.updatedAt = Math.max(...timestamps);
+      onUpdate(payload);
     },
     (error) => onError?.(error)
   );

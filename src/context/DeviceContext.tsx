@@ -104,6 +104,7 @@ export interface DeviceContextType {
   systemMode: SystemMode;
   sensorHistory: HistoricalReading[];
   hasLiveTelemetry: boolean;
+  hasRequiredSafetyTelemetry: boolean;
   events: GasGuardEvent[];
 
   // Firebase integration status
@@ -180,11 +181,13 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
   // Dismissal tracking to prevent popup notification from reopening itself once closed
   const userDismissedAlertRef = useRef<boolean>(false);
   const hazardActiveRef = useRef<boolean>(false);
-  const hasLiveTelemetryRef = useRef<boolean>(false);
+  const hasRequiredSafetyTelemetryRef = useRef<boolean>(false);
+  const sensorTimestampsRef = useRef({ gas: 0, smoke: 0, temperature: 0, humidity: 0, flame: 0 });
 
   // Firebase integration state
   const [isFirebaseConnected, setIsFirebaseConnected] = useState<boolean>(false);
   const [hasLiveTelemetry, setHasLiveTelemetry] = useState(false);
+  const [hasRequiredSafetyTelemetry, setHasRequiredSafetyTelemetry] = useState(false);
   const [firebaseSyncStatus, setFirebaseSyncStatus] = useState<'synced' | 'syncing' | 'connected' | 'idle'>('idle');
 
   // Initial Firebase sync and real-time subscription
@@ -231,56 +234,87 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
     const unsubscribeTelemetry = subscribeToFirebaseTelemetry(
       INITIAL_DEVICE_STATE.info.deviceId,
       (telemetry) => {
-        if (
-          !Number.isFinite(telemetry.gas) ||
-          !Number.isFinite(telemetry.smoke) ||
-          !Number.isFinite(telemetry.temperature) ||
-          !Number.isFinite(telemetry.humidity) ||
-          typeof telemetry.flame !== 'boolean'
-        ) {
-          console.warn('Ignoring malformed Firebase device telemetry.');
-          return;
-        }
-
-        hasLiveTelemetryRef.current = true;
         setHasLiveTelemetry(true);
-        const timestamp = Number.isFinite(telemetry.updatedAt) ? telemetry.updatedAt : Date.now();
+        const now = Date.now();
+        const timestamp = telemetry.updatedAt || now;
+        sensorTimestampsRef.current = {
+          gas: telemetry.available.gas ? telemetry.gasTimestamp || timestamp : 0,
+          smoke: telemetry.available.smoke ? telemetry.smokeTimestamp || timestamp : 0,
+          temperature: telemetry.available.temperature ? telemetry.temperatureTimestamp || timestamp : 0,
+          humidity: telemetry.available.humidity ? telemetry.humidityTimestamp || timestamp : 0,
+          flame: telemetry.available.flame ? telemetry.flameTimestamp || timestamp : 0,
+        };
+        const safetyTimestamps = [
+          telemetry.gasTimestamp,
+          telemetry.smokeTimestamp,
+          telemetry.temperatureTimestamp,
+          telemetry.flameTimestamp,
+        ];
+        const hasFreshSafetySensors = safetyTimestamps.every((value) =>
+          Number.isFinite(value) && now - Number(value) < 60000
+        );
+        hasRequiredSafetyTelemetryRef.current = hasFreshSafetySensors;
+        setHasRequiredSafetyTelemetry(hasFreshSafetySensors);
+
         setDevice((prev) => ({
           ...prev,
           status: { ...prev.status, online: Date.now() - timestamp < 60000, lastSeen: timestamp },
           sensors: {
             ...prev.sensors,
-            gas: {
+            gas: telemetry.available.gas && telemetry.gas !== undefined ? {
               value: telemetry.gas,
               status: telemetry.gas >= prev.safety.gasDangerThreshold
                 ? 'DANGER'
                 : telemetry.gas >= prev.safety.gasWarningThreshold ? 'WARNING' : 'NORMAL',
-              timestamp,
-            },
-            smoke: {
+              timestamp: telemetry.gasTimestamp || timestamp,
+            } : { ...prev.sensors.gas, timestamp: 0 },
+            smoke: telemetry.available.smoke && telemetry.smoke !== undefined ? {
               value: telemetry.smoke,
               detected: telemetry.smoke >= prev.safety.smokeDangerThreshold,
               status: telemetry.smoke >= prev.safety.smokeDangerThreshold
                 ? 'DANGER'
                 : telemetry.smoke >= 200 ? 'WARNING' : 'NORMAL',
-              timestamp,
-            },
-            temperature: { value: telemetry.temperature, unit: '°C', timestamp },
-            humidity: { value: telemetry.humidity, unit: '%', timestamp },
-            flame: { detected: telemetry.flame, timestamp },
+              timestamp: telemetry.smokeTimestamp || timestamp,
+            } : { ...prev.sensors.smoke, timestamp: 0 },
+            temperature: telemetry.available.temperature && telemetry.temperature !== undefined ? {
+              value: telemetry.temperature,
+              unit: '°C',
+              timestamp: telemetry.temperatureTimestamp || timestamp,
+            } : { ...prev.sensors.temperature, timestamp: 0 },
+            humidity: telemetry.available.humidity && telemetry.humidity !== undefined ? {
+              value: telemetry.humidity,
+              unit: '%',
+              timestamp: telemetry.humidityTimestamp || timestamp,
+            } : { ...prev.sensors.humidity, timestamp: 0 },
+            flame: telemetry.available.flame && telemetry.flame !== undefined ? {
+              detected: telemetry.flame,
+              timestamp: telemetry.flameTimestamp || timestamp,
+            } : { ...prev.sensors.flame, timestamp: 0 },
           },
         }));
-        setSensorHistory((history) => [
-          ...history.slice(-59),
-          {
+
+        const sampleTimestamps = [
+          telemetry.gasTimestamp,
+          telemetry.smokeTimestamp,
+          telemetry.temperatureTimestamp,
+          telemetry.humidityTimestamp,
+          telemetry.flameTimestamp,
+        ];
+        const hasCompleteRecentSample = telemetry.gas !== undefined &&
+          telemetry.smoke !== undefined && telemetry.temperature !== undefined &&
+          telemetry.humidity !== undefined && telemetry.flame !== undefined &&
+          sampleTimestamps.every((value) => Number.isFinite(value) && Number(value) > 0) &&
+          Math.max(...sampleTimestamps.map(Number)) - Math.min(...sampleTimestamps.map(Number)) <= 10000;
+        if (hasCompleteRecentSample) {
+          setSensorHistory((history) => [...history.slice(-59), {
             timestamp,
-            gas: telemetry.gas,
-            smoke: telemetry.smoke,
-            temperature: telemetry.temperature,
-            humidity: telemetry.humidity,
-            flame: telemetry.flame,
-          },
-        ]);
+            gas: telemetry.gas!,
+            smoke: telemetry.smoke!,
+            temperature: telemetry.temperature!,
+            humidity: telemetry.humidity!,
+            flame: telemetry.flame!,
+          }]);
+        }
       },
       (error) => console.warn('Firebase telemetry listener error:', error.message)
     );
@@ -353,11 +387,15 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
   });
 
   useEffect(() => {
-    const isLpgDanger = device.sensors.gas.value >= device.safety.gasDangerThreshold;
-    const isLpgWarning = device.sensors.gas.value >= device.safety.gasWarningThreshold;
-    const isFlame = device.sensors.flame.detected;
-    const isSmoke = device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold;
-    const isTemperatureDanger = device.sensors.temperature.value >= device.safety.temperatureDangerThreshold;
+    const isLpgAvailable = device.sensors.gas.timestamp > 0;
+    const isSmokeAvailable = device.sensors.smoke.timestamp > 0;
+    const isFlameAvailable = device.sensors.flame.timestamp > 0;
+    const isTemperatureAvailable = device.sensors.temperature.timestamp > 0;
+    const isLpgDanger = isLpgAvailable && device.sensors.gas.value >= device.safety.gasDangerThreshold;
+    const isLpgWarning = isLpgAvailable && device.sensors.gas.value >= device.safety.gasWarningThreshold;
+    const isFlame = isFlameAvailable && device.sensors.flame.detected;
+    const isSmoke = isSmokeAvailable && (device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold);
+    const isTemperatureDanger = isTemperatureAvailable && device.sensors.temperature.value >= device.safety.temperatureDangerThreshold;
     const shouldCutPower = device.safety.emergency ||
       (isLpgDanger && device.safety.autoPowerCutOnLeak) ||
       (isFlame && device.safety.autoPowerCutOnFire) ||
@@ -558,10 +596,14 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
     };
   }, [
     device.sensors.gas.value,
+    device.sensors.gas.timestamp,
     device.sensors.flame.detected,
+    device.sensors.flame.timestamp,
     device.sensors.smoke.detected,
     device.sensors.smoke.value,
+    device.sensors.smoke.timestamp,
     device.sensors.temperature.value,
+    device.sensors.temperature.timestamp,
     device.safety.gasDangerThreshold,
     device.safety.gasWarningThreshold,
     device.safety.smokeDangerThreshold,
@@ -575,9 +617,35 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
   // Keep connection status fresh without inventing sensor readings.
   useEffect(() => {
     const interval = setInterval(() => {
+      const now = Date.now();
+      const isFresh = (value: number) => value > 0 && now - value < 60000;
+      const availability = {
+        gas: isFresh(sensorTimestampsRef.current.gas),
+        smoke: isFresh(sensorTimestampsRef.current.smoke),
+        temperature: isFresh(sensorTimestampsRef.current.temperature),
+        humidity: isFresh(sensorTimestampsRef.current.humidity),
+        flame: isFresh(sensorTimestampsRef.current.flame),
+      };
+      const hasAnyLiveSensor = Object.values(availability).some(Boolean);
+      const hasFreshSafetySensors = availability.gas && availability.smoke && availability.temperature && availability.flame;
+      hasRequiredSafetyTelemetryRef.current = hasFreshSafetySensors;
+      setHasLiveTelemetry(hasAnyLiveSensor);
+      setHasRequiredSafetyTelemetry(hasFreshSafetySensors);
       setDevice((prev) => {
-        const online = hasLiveTelemetryRef.current && Date.now() - prev.status.lastSeen < 60000;
-        return prev.status.online === online ? prev : { ...prev, status: { ...prev.status, online } };
+        const online = hasAnyLiveSensor && now - prev.status.lastSeen < 60000;
+        const clearStale = <T extends { timestamp: number },>(reading: T, fresh: boolean): T =>
+          fresh ? reading : { ...reading, timestamp: 0 };
+        return {
+          ...prev,
+          status: { ...prev.status, online },
+          sensors: {
+            gas: clearStale(prev.sensors.gas, availability.gas),
+            smoke: clearStale(prev.sensors.smoke, availability.smoke),
+            temperature: clearStale(prev.sensors.temperature, availability.temperature),
+            humidity: clearStale(prev.sensors.humidity, availability.humidity),
+            flame: clearStale(prev.sensors.flame, availability.flame),
+          },
+        };
       });
     }, 4000);
 
@@ -596,8 +664,8 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
       const commandId = `cmd-${now.toString(36)}-${Math.random().toString(36).substring(2, 6)}`;
 
       if (target === 'valve' && action === 'OPEN') {
-        if (!hasLiveTelemetryRef.current) {
-          const msg = 'Valve opening is blocked until live sensor readings arrive from the device.';
+        if (!hasRequiredSafetyTelemetryRef.current) {
+          const msg = 'Valve opening is blocked until fresh gas, smoke, flame, and temperature readings arrive from the device.';
           setCommandFeedback({ status: 'error', message: msg });
           return { success: false, commandId, status: 'REJECTED', message: msg };
         }
@@ -1007,6 +1075,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
         systemMode,
         sensorHistory,
         hasLiveTelemetry,
+        hasRequiredSafetyTelemetry,
         events,
         isFirebaseConnected,
         firebaseProjectId: firebaseConfig.projectId,
