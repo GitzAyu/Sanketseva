@@ -10,6 +10,7 @@ interface ConfirmationModalProps {
   confirmLabel: string;
   confirmVariant?: 'danger' | 'warning' | 'primary';
   isLoading?: boolean;
+  confirmDisabled?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -22,6 +23,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   confirmLabel,
   confirmVariant = 'danger',
   isLoading = false,
+  confirmDisabled = false,
   onConfirm,
   onCancel,
 }) => {
@@ -90,7 +92,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <button
             type="button"
             onClick={onConfirm}
-            disabled={isLoading}
+            disabled={isLoading || confirmDisabled}
             className={`px-4 py-2 text-xs font-bold rounded-xl transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer ${confirmColorClasses}`}
           >
             {isLoading && (

@@ -6,6 +6,8 @@ export interface TranslationDictionary {
   brandSubtitle: string;
   online: string;
   offline: string;
+  waitingForSensors: string;
+  valveNeedsLiveReadings: string;
   lastUpdate: string;
   lastSeen: string;
   emergencyShutdown: string;
@@ -259,7 +261,6 @@ export interface TranslationDictionary {
   dataPipe: string;
   sensorDevice: string;
   whatItProtects: string;
-  esp32Pin: string;
   currentReading: string;
   safeLimit: string;
   condition: string;
@@ -269,6 +270,112 @@ export interface TranslationDictionary {
   monitoringHeaderSubtitle: string;
   alertsHeaderTitle: string;
   alertsHeaderSubtitle: string;
+  dashboardTitle: string;
+  houseStatusTitle: string;
+  houseStatusSubtitle: string;
+  dashboardSubtitle: string;
+  protectionActive: string;
+  liveReadingsTitle: string;
+  equipmentSubtitle: string;
+  console: string;
+  viewAlertPopup: string;
+  powerOffBadge: string;
+  privacyPolicy: string;
+  termsConditions: string;
+  mainsPower: string;
+  powerOnShort: string;
+  powerOffShort: string;
+  statusGas: string;
+  statusFire: string;
+  statusSmoke: string;
+  statusPower: string;
+  statusValve: string;
+  statusElevated: string;
+  statusClean: string;
+  statusNone: string;
+  statusShut: string;
+  historyTitle: string;
+  historySubtitle: string;
+  safetyEventsTab: string;
+  sensorDataTab: string;
+  exportCsv: string;
+  searchEvents: string;
+  timeColumn: string;
+  eventColumn: string;
+  actionColumn: string;
+  noMatchingEvents: string;
+  noActionRecorded: string;
+  resolved: string;
+  statusDetected: string;
+  statusClear: string;
+  statusComfortable: string;
+  systemConfigTitle: string;
+  systemConfigDesc: string;
+  safetyAutoCutoffTitle: string;
+  autoCutoffHelp: string;
+  gasWarningLabel: string;
+  gasWarningHelp: string;
+  gasDangerLabel: string;
+  gasDangerHelp: string;
+  smokeDangerLabel: string;
+  smokeDangerHelp: string;
+  tempWarningLabel: string;
+  tempWarningHelp: string;
+  tempDangerLabel: string;
+  tempDangerHelp: string;
+  autoPowerLeak: string;
+  autoPowerFire: string;
+  autoPowerSmoke: string;
+  saveConfiguration: string;
+  soundSettingsTitle: string;
+  soundMuteState: string;
+  mutedByYou: string;
+  soundArmed: string;
+  saveSettingsError: string;
+  validNumberError: string;
+  positiveValueError: string;
+  gasLimitOrderError: string;
+  tempLimitOrderError: string;
+  playSoundPreview: string;
+  politeChime: string;
+  softPulse: string;
+  standardSiren: string;
+  recommended: string;
+  defaultBadge: string;
+  calmBadge: string;
+  loudBadge: string;
+  politeChimeDesc: string;
+  softPulseDesc: string;
+  standardSirenDesc: string;
+  safetySettingsSaved: string;
+  filterAll: string;
+  filterGas: string;
+  filterFire: string;
+  filterSmoke: string;
+  filterPower: string;
+  filterValve: string;
+  filterFan: string;
+  severityColumn: string;
+  statusColumn: string;
+  timestampColumn: string;
+  gasHistoryColumn: string;
+  smokeHistoryColumn: string;
+  temperatureHistoryColumn: string;
+  humidityHistoryColumn: string;
+  flameHistoryColumn: string;
+  eventSearchEmpty: string;
+  signIn: string; createAccount: string; operatorSignIn: string; registerOperator: string;
+  emailAddress: string; password: string; enterEmail: string; enterPassword: string; minPassword: string;
+  authSignInHelp: string; authRegisterHelp: string; pleaseEnterEmail: string; pleaseEnterPassword: string; passwordTooShort: string;
+  backToConsole: string; lastUpdated: string; privacyTitle: string; termsTitle: string; sound: string; selectAlertSound: string;
+  both: string; gasOnly: string; smokeOnly: string; trendDescription: string; warn: string; last: string; statusLabel: string;
+  showPassword: string; hidePassword: string;
+  legalIntro: string; privacyData: string; termsSafety: string; termsResponsibility: string;
+  working: string; commandSaved: string; commandFailed: string;
+  minimum: string; maximum: string; latest: string;
+  authFailed: string;
+  menuLabel: string; lightMode: string; darkMode: string;
+  never: string;
 }
 
 export const translations: Record<Language, TranslationDictionary> = {
@@ -277,6 +384,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     brandSubtitle: 'IoT LPG Gas, Fire & Smoke Safety System',
     online: 'ONLINE',
     offline: 'OFFLINE',
+    waitingForSensors: 'Waiting for live sensor data',
+    valveNeedsLiveReadings: 'Valve opening is unavailable until the device sends live sensor readings.',
     lastUpdate: 'Last update',
     lastSeen: 'Last seen',
     emergencyShutdown: 'EMERGENCY SHUTDOWN',
@@ -302,7 +411,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     systemCritical: 'CRITICAL DANGER: GAS, FIRE OR SMOKE DETECTED!',
     systemCriticalDesc: 'Immediate emergency protocol active! Solenoid valve cut off, mains power cut OFF (0V), and alarm siren sounding.',
     systemOffline: 'DEVICE DISCONNECTED / OFFLINE',
-    systemOfflineDesc: 'ESP32 controller is not sending telemetry. Check device Wi-Fi and power supply.',
+    systemOfflineDesc: 'The safety device is not sending updates. Check its power and connection.',
 
     easyUnderstandingTitle: 'Safety Guide & System Explanation',
     easyUnderstandingSubtitle: 'How GasGuard protects your kitchen from gas leaks, electrical fires, and smoke',
@@ -336,7 +445,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     sensorHumidity: 'Air Humidity',
     sensorHumidityDesc: 'Relative ambient moisture percentage',
     sensorWifi: 'Wi-Fi Signal',
-    sensorWifiDesc: 'ESP32 controller connectivity strength',
+    sensorWifiDesc: 'Connection strength',
 
     gasSafeDesc: 'Clean, safe air detected. Cooking is safe.',
     gasWarnDesc: 'Minor gas odor detected. Exhaust fan turned ON.',
@@ -431,7 +540,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     thresholdSettingsDesc: 'Configure automatic trigger points for safety equipment',
     saveSettings: 'Save Safety Settings',
     resetDefaults: 'Restore Factory Defaults',
-    settingsSavedSuccess: 'Safety settings successfully synchronized with ESP32!',
+    settingsSavedSuccess: 'Safety settings saved successfully.',
     cancel: 'Cancel',
     confirm: 'Confirm',
     close: 'Close',
@@ -443,7 +552,7 @@ export const translations: Record<Language, TranslationDictionary> = {
 
     hardwareOverrideWarning: 'Hardware safety interlock: Valve cannot open if gas, fire, or smoke is detected.',
     interlockActive: 'Automatic Safety Interlock & Realtime Sync Active',
-    interlockDesc: 'Actuator states automatically sync with ESP32 relay bus. Power cuts OFF and valve closes automatically during emergencies.',
+    interlockDesc: 'Equipment states update automatically. Power turns off and the gas valve closes during emergencies.',
     emergencyLockdownTitle: 'Emergency Safety Cutoff (One-Click Lockdown)',
     emergencyLockdownSubtitle: 'Instantly cut off LPG cylinder valve, switch mains power OFF (0V) to prevent sparks, turn on exhaust fan, and sound emergency siren.',
     emergencyLockdownActive: 'Emergency Lockdown Active',
@@ -481,7 +590,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     powerGridLive: 'POWER ON (230V LIVE)',
     powerCutIsolated: 'POWER OFF (0V CUT)',
 
-    hardwareRelayBus: 'Hardware: ESP32 Relay Bus',
+    hardwareRelayBus: 'Equipment connection',
     liveRunning: 'Live Running',
     standbyIdle: 'Standby / Idle',
     nozzleDry: 'Nozzle Dry - Pressurized 12 Bar',
@@ -518,22 +627,122 @@ export const translations: Record<Language, TranslationDictionary> = {
     dataPipe: 'Data Pipe',
     sensorDevice: 'Sensor Device',
     whatItProtects: 'What It Protects',
-    esp32Pin: 'ESP32 Pin',
     currentReading: 'Current Reading',
     safeLimit: 'Safe Limit',
     condition: 'Condition',
     activeIncident: 'ACTIVE EMERGENCY INCIDENT',
     dismiss: 'Dismiss',
-    monitoringHeaderTitle: 'Sensor Hardware Channels & Telemetry Ingress',
-    monitoringHeaderSubtitle: 'Real-time environmental diagnostic stream received from ESP32 microcontroller',
+    monitoringHeaderTitle: 'Sensor readings',
+    monitoringHeaderSubtitle: 'Live readings from your safety device.',
     alertsHeaderTitle: 'Hazard Alerts & Incident Management',
     alertsHeaderSubtitle: 'Real-time emergency events, threshold breaches, and automated safety actions',
+    dashboardTitle: 'Kitchen safety overview',
+    houseStatusTitle: 'Equipment in your kitchen',
+    houseStatusSubtitle: 'Live actuator states. Grey icons are off; colored icons are on.',
+    dashboardSubtitle: 'Live readings and safety equipment status for your kitchen.',
+    protectionActive: 'Protection active',
+    liveReadingsTitle: 'Live sensor readings',
+    equipmentSubtitle: 'Check and control your safety equipment.',
+    console: 'Home',
+    viewAlertPopup: 'View alert',
+    powerOffBadge: 'Power off',
+    privacyPolicy: 'Privacy',
+    termsConditions: 'Terms',
+    mainsPower: 'Power',
+    powerOnShort: 'On',
+    powerOffShort: 'Off',
+    statusGas: 'Gas',
+    statusFire: 'Fire',
+    statusSmoke: 'Smoke',
+    statusPower: 'Power',
+    statusValve: 'Gas valve',
+    statusElevated: 'High',
+    statusClean: 'Clear',
+    statusNone: 'None',
+    statusShut: 'Closed',
+    historyTitle: 'Safety history',
+    historySubtitle: 'Review past alerts and sensor readings.',
+    safetyEventsTab: 'Safety events',
+    sensorDataTab: 'Sensor readings',
+    exportCsv: 'Export CSV',
+    searchEvents: 'Search events...',
+    timeColumn: 'Time',
+    eventColumn: 'Event',
+    actionColumn: 'Action taken',
+    noMatchingEvents: 'No events match your search.',
+    noActionRecorded: 'No action recorded',
+    resolved: 'Resolved',
+    statusDetected: 'Detected',
+    statusClear: 'Clear',
+    statusComfortable: 'Normal',
+    systemConfigTitle: 'Safety settings',
+    systemConfigDesc: 'Choose when alerts and automatic safety actions should start.',
+    safetyAutoCutoffTitle: 'Alert limits',
+    autoCutoffHelp: 'When a reading reaches a danger limit, the system takes the selected safety actions.',
+    gasWarningLabel: 'Gas warning level (ADC)',
+    gasWarningHelp: 'Starts ventilation when gas begins to rise. Default: 400.',
+    gasDangerLabel: 'Gas danger level (ADC)',
+    gasDangerHelp: 'Closes the gas valve when this level is reached. Default: 500.',
+    smokeDangerLabel: 'Smoke danger level (PPM)',
+    smokeDangerHelp: 'Triggers an alert when smoke reaches this level. Default: 300.',
+    tempWarningLabel: 'Temperature warning (°C)',
+    tempWarningHelp: 'Shows a warning when the room reaches this temperature. Default: 50.',
+    tempDangerLabel: 'Temperature danger (°C)',
+    tempDangerHelp: 'Triggers safety actions when this temperature is reached. Default: 60.',
+    autoPowerLeak: 'Turn off power when gas is detected',
+    autoPowerFire: 'Turn off power when fire is detected',
+    autoPowerSmoke: 'Turn off power when smoke is detected',
+    saveConfiguration: 'Save settings',
+    soundSettingsTitle: 'Alert sound',
+    soundMuteState: 'Sound status',
+    mutedByYou: 'Muted',
+    soundArmed: 'On for alerts',
+    saveSettingsError: 'Could not save settings. Check your connection and try again.',
+    validNumberError: 'Enter a valid number for each limit.',
+    positiveValueError: 'Each limit must be greater than zero.',
+    gasLimitOrderError: 'The gas danger level must be higher than the warning level.',
+    tempLimitOrderError: 'The temperature danger level must be higher than the warning level.',
+    playSoundPreview: 'Preview sound',
+    politeChime: 'Gentle chime',
+    softPulse: 'Soft pulse',
+    standardSiren: 'Standard siren',
+    recommended: 'Recommended',
+    defaultBadge: 'Default',
+    calmBadge: 'Calm',
+    loudBadge: 'Loud',
+    politeChimeDesc: 'A gentle sound for clear, calm alerts.',
+    softPulseDesc: 'A soft, steady tone for alerts.',
+    standardSirenDesc: 'A louder siren for urgent alerts.',
+    safetySettingsSaved: 'Safety settings saved.',
+    filterAll: 'All',
+    filterGas: 'Gas',
+    filterFire: 'Fire',
+    filterSmoke: 'Smoke',
+    filterPower: 'Power',
+    filterValve: 'Valve',
+    filterFan: 'Fan',
+    severityColumn: 'Level',
+    statusColumn: 'Status',
+    timestampColumn: 'Date and time',
+    gasHistoryColumn: 'Gas (ADC)',
+    smokeHistoryColumn: 'Smoke (PPM)',
+    temperatureHistoryColumn: 'Temperature (°C)',
+    humidityHistoryColumn: 'Humidity (%)',
+    flameHistoryColumn: 'Fire',
+    eventSearchEmpty: 'No matching events.',
+    never: 'Never',
+    signIn: 'Sign In', createAccount: 'Create Account', operatorSignIn: 'Operator Sign In', registerOperator: 'Register New Operator',
+    emailAddress: 'Email Address', password: 'Password', enterEmail: 'Please enter your email address.', enterPassword: 'Please enter your password.', minPassword: 'Password must be at least 6 characters.',
+    authSignInHelp: 'Sign in to view safety readings and controls.', authRegisterHelp: 'Create an account to access this safety system.', pleaseEnterEmail: 'Please enter your email address.', pleaseEnterPassword: 'Please enter your password.', passwordTooShort: 'Password must be at least 6 characters.',
+    backToConsole: 'Back', lastUpdated: 'Last updated', privacyTitle: 'Privacy', termsTitle: 'Terms', sound: 'Sound', selectAlertSound: 'Choose alert sound', both: 'Both', gasOnly: 'Gas only', smokeOnly: 'Smoke only', trendDescription: 'Live sensor readings over time.', warn: 'Warning', last: 'Latest', statusLabel: 'Status', showPassword: 'Show password', hidePassword: 'Hide password', legalIntro: 'Information about how this safety system works and handles operational readings.', privacyData: 'The system uses sensor readings, equipment states, and account details to show safety status and record events.', termsSafety: 'This website helps you monitor readings and control connected equipment.', termsResponsibility: 'Always follow local emergency guidance. Do not rely on this website as your only safety measure.', working: 'Working…', commandSaved: 'Change saved.', commandFailed: 'Could not save the change. Check the connection and try again.', minimum: 'Min', maximum: 'Max', latest: 'Latest', authFailed: 'Sign-in failed. Check your details and try again.', menuLabel: 'Open menu', lightMode: 'Light mode', darkMode: 'Dark mode',
   },
   hi: {
     brandName: 'SanketSeva',
     brandSubtitle: 'IoT LPG गैस, आग और धुआं सुरक्षा प्रणाली',
     online: 'ऑनलाइन',
     offline: 'ऑफ़लाइन',
+    waitingForSensors: 'लाइव सेंसर डेटा का इंतज़ार',
+    valveNeedsLiveReadings: 'डिवाइस से लाइव सेंसर रीडिंग मिलने तक गैस वाल्व नहीं खुल सकता।',
     lastUpdate: 'अंतिम अपडेट',
     lastSeen: 'अंतिम देखा गया',
     emergencyShutdown: 'आपातकालीन शटडाउन',
@@ -559,7 +768,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     systemCritical: 'गंभीर खतरा: गैस, आग या धुआं मिला!',
     systemCriticalDesc: 'आपातकालीन सुरक्षा सक्रिय! गैस वाल्व बंद, मेन बिजली बंद (OFF / 0V), और सायरन चालू।',
     systemOffline: 'डिवाइस डिस्कनेक्ट / ऑफ़लाइन',
-    systemOfflineDesc: 'ESP32 कंट्रोलर टेलीमेट्री नहीं भेज रहा है। वाई-फाई व बिजली जांचें।',
+    systemOfflineDesc: 'सुरक्षा उपकरण से नई जानकारी नहीं मिल रही है। बिजली और कनेक्शन जांचें।',
 
     easyUnderstandingTitle: 'सुरक्षा गाइड और प्रणाली विवरण',
     easyUnderstandingSubtitle: 'गैस रिसाव, बिजली की चिंगारी और धुएं से सुरक्षा',
@@ -593,7 +802,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     sensorHumidity: 'हवा की नमी',
     sensorHumidityDesc: 'कमरे की सामान्य नमी',
     sensorWifi: 'वाई-फाई सिग्नल',
-    sensorWifiDesc: 'ESP32 कनेक्शन शक्ति',
+    sensorWifiDesc: 'कनेक्शन की शक्ति',
 
     gasSafeDesc: 'हवा स्वच्छ है। खाना बनाना सुरक्षित है।',
     gasWarnDesc: 'हल्की गैस गंध। पंखा चालू किया गया।',
@@ -688,7 +897,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     thresholdSettingsDesc: 'स्वचालित सुरक्षा उपकरण ट्रिगर सेट करें',
     saveSettings: 'सेटिंग्स सेव करें',
     resetDefaults: 'डिफ़ॉल्ट रीसेट करें',
-    settingsSavedSuccess: 'सेटिंग्स ESP32 में सेव हो गईं!',
+    settingsSavedSuccess: 'सुरक्षा सेटिंग्स सेव हो गईं।',
     cancel: 'रद्द करें',
     confirm: 'पुष्टि करें',
     close: 'बंद करें',
@@ -738,7 +947,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     powerGridLive: 'पावर चालू (230V)',
     powerCutIsolated: 'पावर बंद (0V कट)',
 
-    hardwareRelayBus: 'ESP32 रिले बस',
+    hardwareRelayBus: 'उपकरण कनेक्शन',
     liveRunning: 'सक्रिय चालू',
     standbyIdle: 'स्टैंडबाय',
     nozzleDry: 'नोजल सूखा',
@@ -775,22 +984,121 @@ export const translations: Record<Language, TranslationDictionary> = {
     dataPipe: 'डेटा पाइप',
     sensorDevice: 'सेंसर उपकरण',
     whatItProtects: 'यह क्या बचाता है',
-    esp32Pin: 'ESP32 पिन',
     currentReading: 'वर्तमान रीडिंग',
     safeLimit: 'सुरक्षित सीमा',
     condition: 'स्थिति',
     activeIncident: 'सक्रिय आपात घटना',
     dismiss: 'हटाएं',
-    monitoringHeaderTitle: 'सेंसर हार्डवेयर टेलीमेट्री',
-    monitoringHeaderSubtitle: 'ESP32 से प्राप्त वास्तविक समय डेटा',
+    monitoringHeaderTitle: 'सेंसर की रीडिंग',
+    monitoringHeaderSubtitle: 'आपके सुरक्षा उपकरण से ताज़ा जानकारी।',
     alertsHeaderTitle: 'अलर्ट व घटना प्रबंधन',
     alertsHeaderSubtitle: 'आपातकालीन घटनाएं व स्वचालित सुरक्षा क्रियाएं',
+    dashboardTitle: 'रसोई सुरक्षा की जानकारी',
+    houseStatusTitle: 'आपकी रसोई के उपकरण',
+    houseStatusSubtitle: 'उपकरणों की लाइव स्थिति। धूसर आइकन बंद हैं और रंगीन आइकन चालू हैं।',
+    dashboardSubtitle: 'रसोई के सेंसर और सुरक्षा उपकरणों की ताज़ा स्थिति।',
+    protectionActive: 'सुरक्षा चालू है',
+    liveReadingsTitle: 'सेंसर की ताज़ा रीडिंग',
+    equipmentSubtitle: 'सुरक्षा उपकरणों की स्थिति देखें और उन्हें चलाएं।',
+    console: 'मुखपृष्ठ',
+    viewAlertPopup: 'अलर्ट देखें',
+    powerOffBadge: 'बिजली बंद',
+    privacyPolicy: 'गोपनीयता',
+    termsConditions: 'नियम',
+    mainsPower: 'बिजली',
+    powerOnShort: 'चालू',
+    powerOffShort: 'बंद',
+    statusGas: 'गैस',
+    statusFire: 'आग',
+    statusSmoke: 'धुआं',
+    statusPower: 'बिजली',
+    statusValve: 'गैस वाल्व',
+    statusElevated: 'बढ़ा हुआ',
+    statusClean: 'साफ',
+    statusNone: 'नहीं',
+    statusShut: 'बंद',
+    historyTitle: 'सुरक्षा का इतिहास',
+    historySubtitle: 'पुराने अलर्ट और सेंसर रीडिंग देखें।',
+    safetyEventsTab: 'सुरक्षा घटनाएं',
+    sensorDataTab: 'सेंसर रीडिंग',
+    exportCsv: 'CSV डाउनलोड करें',
+    searchEvents: 'घटनाएं खोजें...',
+    timeColumn: 'समय',
+    eventColumn: 'घटना',
+    actionColumn: 'की गई कार्रवाई',
+    noMatchingEvents: 'आपकी खोज से कोई घटना नहीं मिली।',
+    noActionRecorded: 'कोई कार्रवाई दर्ज नहीं है',
+    resolved: 'सुलझा हुआ',
+    statusDetected: 'पता चला',
+    statusClear: 'साफ',
+    statusComfortable: 'सामान्य',
+    systemConfigTitle: 'सुरक्षा सेटिंग्स',
+    systemConfigDesc: 'चुनें कि अलर्ट और अपने-आप सुरक्षा कार्रवाई कब शुरू हो।',
+    safetyAutoCutoffTitle: 'अलर्ट की सीमाएं',
+    autoCutoffHelp: 'खतरे की सीमा आने पर सिस्टम चुनी गई सुरक्षा कार्रवाई करेगा।',
+    gasWarningLabel: 'गैस चेतावनी स्तर (ADC)',
+    gasWarningHelp: 'गैस बढ़ने पर हवा निकालने वाला पंखा चालू होगा। डिफ़ॉल्ट: 400।',
+    gasDangerLabel: 'गैस खतरे का स्तर (ADC)',
+    gasDangerHelp: 'यह स्तर आने पर गैस वाल्व बंद होगा। डिफ़ॉल्ट: 500।',
+    smokeDangerLabel: 'धुएं का खतरे का स्तर (PPM)',
+    smokeDangerHelp: 'यह स्तर आने पर अलर्ट शुरू होगा। डिफ़ॉल्ट: 300।',
+    tempWarningLabel: 'तापमान चेतावनी (°C)',
+    tempWarningHelp: 'कमरे का तापमान यहां पहुंचने पर चेतावनी दिखेगी। डिफ़ॉल्ट: 50।',
+    tempDangerLabel: 'तापमान खतरे का स्तर (°C)',
+    tempDangerHelp: 'यह तापमान आने पर सुरक्षा कार्रवाई होगी। डिफ़ॉल्ट: 60।',
+    autoPowerLeak: 'गैस मिलने पर बिजली बंद करें',
+    autoPowerFire: 'आग मिलने पर बिजली बंद करें',
+    autoPowerSmoke: 'धुआं मिलने पर बिजली बंद करें',
+    saveConfiguration: 'सेटिंग्स सहेजें',
+    soundSettingsTitle: 'अलर्ट की आवाज़',
+    soundMuteState: 'आवाज़ की स्थिति',
+    mutedByYou: 'म्यूट है',
+    soundArmed: 'अलर्ट के लिए चालू',
+    saveSettingsError: 'सेटिंग्स सहेजी नहीं जा सकीं। कनेक्शन जांचकर फिर कोशिश करें।',
+    validNumberError: 'हर सीमा के लिए सही संख्या दर्ज करें।',
+    positiveValueError: 'हर सीमा शून्य से अधिक होनी चाहिए।',
+    gasLimitOrderError: 'गैस खतरे की सीमा चेतावनी सीमा से अधिक होनी चाहिए।',
+    tempLimitOrderError: 'तापमान खतरे की सीमा चेतावनी सीमा से अधिक होनी चाहिए।',
+    playSoundPreview: 'आवाज़ सुनें',
+    politeChime: 'हल्की घंटी',
+    softPulse: 'धीमी धुन',
+    standardSiren: 'सामान्य सायरन',
+    recommended: 'सुझाव',
+    defaultBadge: 'डिफ़ॉल्ट',
+    calmBadge: 'धीमा',
+    loudBadge: 'तेज़',
+    politeChimeDesc: 'शांत और हल्के अलर्ट के लिए मधुर आवाज़।',
+    softPulseDesc: 'अलर्ट के लिए धीमी और स्थिर धुन।',
+    standardSirenDesc: 'ज़रूरी अलर्ट के लिए तेज़ सायरन।',
+    safetySettingsSaved: 'सुरक्षा सेटिंग्स सहेजी गईं।',
+    filterAll: 'सभी',
+    filterGas: 'गैस',
+    filterFire: 'आग',
+    filterSmoke: 'धुआं',
+    filterPower: 'बिजली',
+    filterValve: 'वाल्व',
+    filterFan: 'पंखा',
+    severityColumn: 'स्तर',
+    statusColumn: 'स्थिति',
+    timestampColumn: 'दिनांक और समय',
+    gasHistoryColumn: 'गैस (ADC)',
+    smokeHistoryColumn: 'धुआं (PPM)',
+    temperatureHistoryColumn: 'तापमान (°C)',
+    humidityHistoryColumn: 'नमी (%)',
+    flameHistoryColumn: 'आग',
+    eventSearchEmpty: 'कोई घटना नहीं मिली।',
+    never: 'कभी नहीं',
+    signIn: 'साइन इन', createAccount: 'खाता बनाएँ', operatorSignIn: 'ऑपरेटर साइन इन', registerOperator: 'नया ऑपरेटर पंजीकरण', emailAddress: 'ईमेल पता', password: 'पासवर्ड', enterEmail: 'अपना ईमेल पता दर्ज करें।', enterPassword: 'अपना पासवर्ड दर्ज करें।', minPassword: 'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।',
+    authSignInHelp: 'सुरक्षा रीडिंग और नियंत्रण देखने के लिए साइन इन करें।', authRegisterHelp: 'इस सुरक्षा सिस्टम का उपयोग करने के लिए खाता बनाएँ।', pleaseEnterEmail: 'अपना ईमेल पता दर्ज करें।', pleaseEnterPassword: 'अपना पासवर्ड दर्ज करें।', passwordTooShort: 'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।',
+    backToConsole: 'वापस जाएँ', lastUpdated: 'अंतिम अपडेट', privacyTitle: 'गोपनीयता', termsTitle: 'नियम', sound: 'आवाज़', selectAlertSound: 'अलर्ट की आवाज़ चुनें', both: 'दोनों', gasOnly: 'केवल गैस', smokeOnly: 'केवल धुआँ', trendDescription: 'समय के साथ सेंसर रीडिंग।', warn: 'चेतावनी', last: 'नवीनतम', statusLabel: 'स्थिति', showPassword: 'पासवर्ड दिखाएँ', hidePassword: 'पासवर्ड छिपाएँ', legalIntro: 'यह जानकारी सुरक्षा प्रणाली और इसके संचालन संबंधी डेटा के उपयोग के बारे में है।', privacyData: 'सिस्टम सुरक्षा स्थिति दिखाने और घटनाएँ दर्ज करने के लिए सेंसर रीडिंग, उपकरण स्थिति और खाते की जानकारी का उपयोग करता है।', termsSafety: 'यह वेबसाइट रीडिंग देखने और जुड़े उपकरणों को नियंत्रित करने में मदद करती है।', termsResponsibility: 'आपात स्थिति में स्थानीय सुरक्षा निर्देशों का पालन करें। केवल इस वेबसाइट पर निर्भर न रहें।', working: 'काम हो रहा है…', commandSaved: 'बदलाव सेव हो गया।', commandFailed: 'बदलाव सेव नहीं हो सका। कनेक्शन जाँचकर फिर कोशिश करें।', minimum: 'न्यूनतम', maximum: 'अधिकतम', latest: 'नवीनतम', authFailed: 'साइन इन नहीं हो सका। जानकारी जाँचकर फिर कोशिश करें।', menuLabel: 'मेन्यू खोलें', lightMode: 'लाइट मोड', darkMode: 'डार्क मोड',
   },
   bho: {
     brandName: 'SanketSeva',
     brandSubtitle: 'IoT रसोई गैस, आग अउर धुआं सुरक्षा प्रणाली',
     online: 'ऑनलाइन',
     offline: 'ऑफ़लाइन',
+    waitingForSensors: 'लाइव सेंसर डेटा के इंतजार में',
+    valveNeedsLiveReadings: 'डिवाइस से लाइव सेंसर रीडिंग मिले के बादे गैस वाल्व खुली।',
     lastUpdate: 'पिछिला अपडेट',
     lastSeen: 'अंतिम बेर देखल',
     emergencyShutdown: 'आपातकालीन शटडाउन',
@@ -816,7 +1124,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     systemCritical: 'भारी खतरा: गैस, आग भा धुआं मिलल!',
     systemCriticalDesc: 'आपातकालीन सुरक्षा चालू! गैस वाल्व बंद, बिजली बंद (OFF / 0V), आ सायरन बाजत बा।',
     systemOffline: 'डिवाइस बंद / ऑफ़लाइन',
-    systemOfflineDesc: 'ESP32 सिग्नल नइखे भेजत।',
+    systemOfflineDesc: 'सुरक्षा उपकरण से नया जानकारी नइखे मिलत। बिजली आ कनेक्शन जांचीं।',
 
     easyUnderstandingTitle: 'सुरक्षा गाइड',
     easyUnderstandingSubtitle: 'गैस रिसाव, चिंगारी आ धुआं से बचाव',
@@ -850,7 +1158,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     sensorHumidity: 'हवा के नमी',
     sensorHumidityDesc: 'कमरा के नमी',
     sensorWifi: 'वाई-फाई सिग्नल',
-    sensorWifiDesc: 'ESP32 सिग्नल',
+    sensorWifiDesc: 'कनेक्शन की शक्ति',
 
     gasSafeDesc: 'हवा साफ बा। खाना बनावे खातिर सुरक्षित बा।',
     gasWarnDesc: 'हल्का गैस मिलल बा। पंखा चालू बा।',
@@ -945,7 +1253,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     thresholdSettingsDesc: 'स्वचालित ट्रिगर सेट करीं',
     saveSettings: 'सेटिंग सेव करीं',
     resetDefaults: 'डिफ़ॉल्ट करीं',
-    settingsSavedSuccess: 'सेटिंग्स ESP32 में सेव हो गइल!',
+    settingsSavedSuccess: 'सुरक्षा सेटिंग सहेजल गइल।',
     cancel: 'रद्द करीं',
     confirm: 'पुष्टि करीं',
     close: 'बंद करीं',
@@ -995,7 +1303,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     powerGridLive: 'बिजली चालू (230V)',
     powerCutIsolated: 'बिजली बंद (0V कट)',
 
-    hardwareRelayBus: 'ESP32 रिले',
+    hardwareRelayBus: 'उपकरण कनेक्शन',
     liveRunning: 'चालू',
     standbyIdle: 'शांत',
     nozzleDry: 'सूखल',
@@ -1032,15 +1340,112 @@ export const translations: Record<Language, TranslationDictionary> = {
     dataPipe: 'डेटा पाइप',
     sensorDevice: 'सेंसर उपकरण',
     whatItProtects: 'का बचावेला',
-    esp32Pin: 'ESP32 पिन',
     currentReading: 'रीडिंग',
     safeLimit: 'सुरक्षित सीमा',
     condition: 'हालत',
     activeIncident: 'आपात घटना',
     dismiss: 'हटावीं',
-    monitoringHeaderTitle: 'सेंसर डेटा',
-    monitoringHeaderSubtitle: 'ESP32 से रियल-टाइम डेटा',
+    monitoringHeaderTitle: 'सेंसर के रीडिंग',
+    monitoringHeaderSubtitle: 'रउरा सुरक्षा उपकरण से ताज़ा जानकारी।',
     alertsHeaderTitle: 'अलर्ट लॉग',
     alertsHeaderSubtitle: 'आपातकालीन घटना आ सुरक्षा कार्रवाई',
+    dashboardTitle: 'रसोई सुरक्षा के हाल',
+    houseStatusTitle: 'रसोई के उपकरण',
+    houseStatusSubtitle: 'उपकरण के लाइव हाल। धूसर चिन्ह बंद आ रंगीन चिन्ह चालू बा।',
+    dashboardSubtitle: 'रसोई के सेंसर आ सुरक्षा उपकरण के ताज़ा स्थिति।',
+    protectionActive: 'सुरक्षा चालू बा',
+    liveReadingsTitle: 'सेंसर के ताज़ा रीडिंग',
+    equipmentSubtitle: 'सुरक्षा उपकरण के स्थिति देखीं आ चलाईं।',
+    console: 'होम',
+    viewAlertPopup: 'अलर्ट देखीं',
+    powerOffBadge: 'बिजली बंद',
+    privacyPolicy: 'गोपनीयता',
+    termsConditions: 'नियम',
+    mainsPower: 'बिजली',
+    powerOnShort: 'चालू',
+    powerOffShort: 'बंद',
+    statusGas: 'गैस',
+    statusFire: 'आग',
+    statusSmoke: 'धुआं',
+    statusPower: 'बिजली',
+    statusValve: 'गैस वाल्व',
+    statusElevated: 'बढ़ल',
+    statusClean: 'साफ',
+    statusNone: 'ना',
+    statusShut: 'बंद',
+    historyTitle: 'सुरक्षा के इतिहास',
+    historySubtitle: 'पुरान अलर्ट आ सेंसर रीडिंग देखीं।',
+    safetyEventsTab: 'सुरक्षा घटना',
+    sensorDataTab: 'सेंसर रीडिंग',
+    exportCsv: 'CSV डाउनलोड करीं',
+    searchEvents: 'घटना खोजीं...',
+    timeColumn: 'समय',
+    eventColumn: 'घटना',
+    actionColumn: 'कइल कार्रवाई',
+    noMatchingEvents: 'खोज में कवनो घटना ना मिलल।',
+    noActionRecorded: 'कवनो कार्रवाई दर्ज नइखे',
+    resolved: 'सुलझ गइल',
+    statusDetected: 'पता चलल',
+    statusClear: 'साफ',
+    statusComfortable: 'सामान्य',
+    systemConfigTitle: 'सुरक्षा सेटिंग',
+    systemConfigDesc: 'चुनीं कि अलर्ट आ अपने-आप सुरक्षा कार्रवाई कब शुरू होखे।',
+    safetyAutoCutoffTitle: 'अलर्ट के सीमा',
+    autoCutoffHelp: 'खतरा सीमा पर सिस्टम चुनील सुरक्षा कार्रवाई करी।',
+    gasWarningLabel: 'गैस चेतावनी स्तर (ADC)',
+    gasWarningHelp: 'गैस बढ़े पर हवा निकाले वाला पंखा चली। डिफ़ॉल्ट: 400।',
+    gasDangerLabel: 'गैस खतरा स्तर (ADC)',
+    gasDangerHelp: 'ई स्तर पर गैस वाल्व बंद होई। डिफ़ॉल्ट: 500।',
+    smokeDangerLabel: 'धुआं खतरा स्तर (PPM)',
+    smokeDangerHelp: 'ई स्तर पर अलर्ट शुरू होई। डिफ़ॉल्ट: 300।',
+    tempWarningLabel: 'तापमान चेतावनी (°C)',
+    tempWarningHelp: 'कमरा के तापमान इहाँ पहुंचे पर चेतावनी मिली। डिफ़ॉल्ट: 50।',
+    tempDangerLabel: 'तापमान खतरा स्तर (°C)',
+    tempDangerHelp: 'ई तापमान पर सुरक्षा कार्रवाई होई। डिफ़ॉल्ट: 60।',
+    autoPowerLeak: 'गैस मिले पर बिजली बंद करीं',
+    autoPowerFire: 'आग मिले पर बिजली बंद करीं',
+    autoPowerSmoke: 'धुआं मिले पर बिजली बंद करीं',
+    saveConfiguration: 'सेटिंग सहेजीं',
+    soundSettingsTitle: 'अलर्ट आवाज़',
+    soundMuteState: 'आवाज के स्थिति',
+    mutedByYou: 'म्यूट बा',
+    soundArmed: 'अलर्ट खातिर चालू',
+    saveSettingsError: 'सेटिंग ना सहेजल जा सकल। कनेक्शन जांच के फेर कोशिश करीं।',
+    validNumberError: 'हर सीमा खातिर सही नंबर डालीं।',
+    positiveValueError: 'हर सीमा शून्य से ऊपर होखे के चाहीं।',
+    gasLimitOrderError: 'गैस खतरा सीमा चेतावनी सीमा से ऊपर होखे के चाहीं।',
+    tempLimitOrderError: 'तापमान खतरा सीमा चेतावनी सीमा से ऊपर होखे के चाहीं।',
+    playSoundPreview: 'आवाज सुनाईं',
+    politeChime: 'हल्का घंटी',
+    softPulse: 'धीमा धुन',
+    standardSiren: 'सामान्य सायरन',
+    recommended: 'सुझाव',
+    defaultBadge: 'डिफ़ॉल्ट',
+    calmBadge: 'धीमा',
+    loudBadge: 'तेज',
+    politeChimeDesc: 'शांत अलर्ट खातिर हल्का मधुर आवाज।',
+    softPulseDesc: 'अलर्ट खातिर धीमा आ स्थिर धुन।',
+    standardSirenDesc: 'जरूरी अलर्ट खातिर तेज सायरन।',
+    safetySettingsSaved: 'सुरक्षा सेटिंग सहेजल गइल।',
+    filterAll: 'सब',
+    filterGas: 'गैस',
+    filterFire: 'आग',
+    filterSmoke: 'धुआं',
+    filterPower: 'बिजली',
+    filterValve: 'वाल्व',
+    filterFan: 'पंखा',
+    severityColumn: 'स्तर',
+    statusColumn: 'स्थिति',
+    timestampColumn: 'तारीख आ समय',
+    gasHistoryColumn: 'गैस (ADC)',
+    smokeHistoryColumn: 'धुआं (PPM)',
+    temperatureHistoryColumn: 'तापमान (°C)',
+    humidityHistoryColumn: 'नमी (%)',
+    flameHistoryColumn: 'आग',
+    eventSearchEmpty: 'कवनो घटना ना मिलल।',
+    never: 'कबो ना',
+    signIn: 'लॉगिन करीं', createAccount: 'खाता बनाईं', operatorSignIn: 'ऑपरेटर लॉगिन', registerOperator: 'नया ऑपरेटर जोड़ीं', emailAddress: 'ईमेल पता', password: 'पासवर्ड', enterEmail: 'अपना ईमेल पता डालीं।', enterPassword: 'अपना पासवर्ड डालीं।', minPassword: 'पासवर्ड कम से कम 6 अक्षर के होखे के चाहीं।',
+    authSignInHelp: 'सुरक्षा रीडिंग आ कंट्रोल देखे खातिर लॉगिन करीं।', authRegisterHelp: 'सुरक्षा सिस्टम चलावे खातिर खाता बनाईं।', pleaseEnterEmail: 'अपना ईमेल पता डालीं।', pleaseEnterPassword: 'अपना पासवर्ड डालीं।', passwordTooShort: 'पासवर्ड कम से कम 6 अक्षर के होखे के चाहीं।',
+    backToConsole: 'वापस जाईं', lastUpdated: 'आखिरी अपडेट', privacyTitle: 'गोपनीयता', termsTitle: 'नियम', sound: 'आवाज', selectAlertSound: 'अलर्ट के आवाज चुनीं', both: 'दूनो', gasOnly: 'खाली गैस', smokeOnly: 'खाली धुआं', trendDescription: 'समय के साथ सेंसर रीडिंग।', warn: 'चेतावनी', last: 'नया', statusLabel: 'स्थिति', showPassword: 'पासवर्ड देखीं', hidePassword: 'पासवर्ड छिपाईं', legalIntro: 'ई जानकारी सुरक्षा सिस्टम आ ओकर संचालन डेटा के बारे में बा।', privacyData: 'सिस्टम सुरक्षा स्थिति देखावे आ घटना दर्ज करे खातिर सेंसर रीडिंग, उपकरण स्थिति आ खाता जानकारी के उपयोग करेला।', termsSafety: 'ई वेबसाइट रीडिंग देखे आ जुड़ल उपकरण चलावे में मदद करेला।', termsResponsibility: 'आपातकाल में स्थानीय सुरक्षा निर्देश मानीं। खाली एह वेबसाइट पर निर्भर मत रहीं।', working: 'काम हो रहल बा…', commandSaved: 'बदलाव सहेजल गइल।', commandFailed: 'बदलाव ना सहेजल जा सकल। कनेक्शन देख के फेर कोशिश करीं।', minimum: 'न्यूनतम', maximum: 'अधिकतम', latest: 'नया', authFailed: 'लॉगिन ना हो सकल। जानकारी जाँच के फेर कोशिश करीं।', menuLabel: 'मेन्यू खोलीं', lightMode: 'लाइट मोड', darkMode: 'डार्क मोड',
   },
 };

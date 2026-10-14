@@ -421,12 +421,11 @@ export const ActuatorVisualSimulation: React.FC<ActuatorVisualSimulationProps> =
 
       {/* Bottom Live Action Caption */}
       <div className="w-full flex items-center justify-between pt-1 border-t border-slate-800/80 text-[10px] text-slate-400">
-        <span>{t.hardwareRelayBus}</span>
         <span className="font-semibold text-slate-300">
           {isPowerCutType
             ? isPowerOn
-              ? `⚡ 230V Live (Power ON)`
-              : `🔒 0V Cut Safe (Power OFF)`
+              ? `⚡ ${t.powerOnShort}`
+              : `🔒 ${t.powerOffShort}`
             : isActive
             ? `⚡ ${t.liveRunning}`
             : `⚪ ${t.standbyIdle}`}

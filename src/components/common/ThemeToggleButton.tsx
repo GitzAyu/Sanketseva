@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface ThemeToggleButtonProps {
   className?: string;
@@ -14,6 +15,7 @@ export const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({
   showLabel = false,
 }) => {
   const { toggleTheme, isDark } = useTheme();
+  const { t } = useLanguage();
 
   const sizeClasses = {
     sm: 'w-8 h-8 p-1.5',
@@ -36,8 +38,8 @@ export const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({
           ? 'bg-slate-800 hover:bg-slate-700 text-amber-400 border-slate-700 hover:border-slate-600'
           : 'bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 border-slate-200 hover:border-slate-300'
       } ${className}`}
-      title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-      aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      title={isDark ? t.lightMode : t.darkMode}
+      aria-label={isDark ? t.lightMode : t.darkMode}
     >
       {isDark ? (
         <Sun className={`${iconSizes} transition-transform duration-300 rotate-0 hover:rotate-45 text-amber-400`} />
@@ -46,7 +48,7 @@ export const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({
       )}
       {showLabel && (
         <span className="ml-2 text-xs font-semibold">
-          {isDark ? 'Light Mode' : 'Dark Mode'}
+          {isDark ? t.lightMode : t.darkMode}
         </span>
       )}
     </button>

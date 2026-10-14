@@ -7,18 +7,15 @@ import {
   Lock,
   Unlock,
   ShowerHead,
-  Shield,
   CheckCircle2,
   AlertTriangle,
-  Loader2,
-  Cpu,
+  Clock3,
   Zap,
   ZapOff,
 } from 'lucide-react';
 import { ValveState, SwitchState } from '../../types/actuators';
 import { formatRelativeTime } from '../../utils/formatting';
 import { ConfirmationModal } from '../common/ConfirmationModal';
-import { ActuatorVisualSimulation } from './ActuatorVisualSimulation';
 import { useLanguage } from '../../context/LanguageContext';
 
 interface ActuatorCardProps {
@@ -43,7 +40,7 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
   isLoading = false,
   canOpenValve,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [showValveConfirm, setShowValveConfirm] = useState(false);
   const [showPowerConfirm, setShowPowerConfirm] = useState(false);
   const [pendingPowerTargetState, setPendingPowerTargetState] = useState<'ON' | 'OFF' | null>(null);
@@ -60,21 +57,18 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
   const isPowerOff = isPowerCut ? !isSwitchOn : false;
 
   const isActive = isValve ? isValveOpen : isPowerCut ? isPowerOn : isSwitchOn;
-
-  const getHardwarePin = () => {
-    switch (type) {
-      case 'valve':
-        return 'GPIO 18 • Relay 1 (Gas Solenoid)';
-      case 'powerCut':
-        return 'GPIO 26 • Relay 4 (230V Mains Breaker)';
-      case 'fan':
-        return 'GPIO 19 • Relay 2 (Exhaust Blower)';
-      case 'extinguisher':
-        return 'GPIO 25 • Relay 3 (Water Deluge Pump)';
-      case 'buzzer':
-        return 'GPIO 21 • PWM Alarm Siren';
-    }
-  };
+  const cardStateClass = isPowerCut
+    ? isPowerOn
+      ? 'border-emerald-200 dark:border-emerald-900/70'
+      : 'border-amber-200 dark:border-amber-900/70'
+    : isActive
+      ? 'border-emerald-200 dark:border-emerald-900/70'
+      : 'border-slate-200 dark:border-slate-800';
+  const accentClass = isPowerCut
+    ? isPowerOn ? 'bg-emerald-500' : 'bg-amber-500'
+    : isActive
+      ? type === 'fan' ? 'bg-cyan-500' : type === 'extinguisher' ? 'bg-sky-500' : type === 'buzzer' ? 'bg-rose-500' : 'bg-emerald-500'
+      : 'bg-slate-200 dark:bg-slate-700';
 
   const getIcon = () => {
     switch (type) {
@@ -86,7 +80,7 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
         );
       case 'powerCut':
         return isPowerOn ? (
-          <Zap className="w-5 h-5 text-emerald-600 dark:text-emerald-400 animate-pulse" />
+          <Zap className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
         ) : (
           <ZapOff className="w-5 h-5 text-amber-500 dark:text-amber-400" />
         );
@@ -94,7 +88,7 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
         return (
           <Fan
             className={`w-5 h-5 ${
-              isSwitchOn ? 'text-cyan-500 dark:text-cyan-400 animate-spin' : 'text-slate-400'
+              isSwitchOn ? 'text-cyan-500 dark:text-cyan-400' : 'text-slate-400'
             }`}
           />
         );
@@ -108,7 +102,7 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
         );
       case 'buzzer':
         return isSwitchOn ? (
-          <Bell className="w-5 h-5 text-rose-500 dark:text-rose-400 animate-bounce" />
+          <Bell className="w-5 h-5 text-rose-500 dark:text-rose-400" />
         ) : (
           <BellOff className="w-5 h-5 text-slate-400" />
         );
@@ -191,9 +185,10 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
 
   return (
     <>
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xs transition-all duration-200">
+      <div className={`relative overflow-hidden bg-white dark:bg-slate-900 border ${cardStateClass} rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-sm`}>
+        <div className={`absolute inset-x-0 top-0 h-1 ${accentClass}`} />
         <div>
-          {/* Header Row: Title, Icon, Hardware Pin & Toggle Switch */}
+          {/* Header row with actuator name and toggle switch */}
           <div className="flex items-start justify-between gap-3 mb-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <div
@@ -219,9 +214,6 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 truncate block">
                   {title}
                 </span>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono block">
-                  {getHardwarePin()}
-                </span>
               </div>
             </div>
 
@@ -235,8 +227,8 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
                 type="button"
                 onClick={handleToggleSwitch}
                 disabled={isLoading}
-                title={`Toggle ${title} (Currently ${isActive ? 'ON' : 'OFF'})`}
-                className={`relative inline-flex h-7 w-13 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500/50 disabled:opacity-50 ${
+                title={`${title}: ${isActive ? t.statusActive : t.statusInactive}`}
+                className={`relative inline-flex h-7 w-[52px] shrink-0 cursor-pointer rounded-full border-0 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 disabled:opacity-50 ${
                   isActive
                     ? isPowerCut
                       ? 'bg-emerald-600'
@@ -252,12 +244,12 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
               >
                 <span className="sr-only">Toggle {title}</span>
                 <span
-                  className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition duration-200 ease-in-out flex items-center justify-center ${
+                  className={`pointer-events-none absolute left-0.5 top-0.5 flex h-6 w-6 transform items-center justify-center rounded-full bg-white shadow-sm ${
                     isActive ? 'translate-x-6' : 'translate-x-0'
                   }`}
                 >
                   {isLoading ? (
-                    <Loader2 className="w-3 h-3 text-slate-500 animate-spin" />
+                    <Clock3 className="w-3 h-3 text-slate-500" />
                   ) : (
                     <Power
                       className={`w-3 h-3 ${
@@ -280,13 +272,8 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
             </div>
           </div>
 
-          {/* Interactive Live Hardware Simulation Canvas */}
-          <div className="mb-3">
-            <ActuatorVisualSimulation type={type} state={state} compact={true} />
-          </div>
-
           {/* State Text & Last Update */}
-          <div className="flex items-baseline justify-between gap-2 px-1">
+            <div className="flex items-center justify-between gap-2 px-1">
             <div className="flex items-center gap-2">
               <span
                 className={`text-sm font-extrabold tracking-tight ${
@@ -320,19 +307,19 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
                   : t.statusInactive}
               </span>
               <span
-                className={`w-2 h-2 rounded-full ${
+                className={`w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-900 ${
                   isPowerCut
                     ? isPowerOn
-                      ? 'bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse'
+                      ? 'bg-emerald-500'
                       : 'bg-amber-500 shadow-[0_0_8px_#f59e0b]'
                     : isActive
-                    ? 'bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse'
+                    ? 'bg-emerald-500'
                     : 'bg-slate-400 dark:bg-slate-600'
                 }`}
               />
             </div>
             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
-              {t.lastUpdate}: {formatRelativeTime(lastChanged)}
+              {t.lastUpdate}: {formatRelativeTime(lastChanged, language, t.never)}
             </span>
           </div>
 
@@ -343,8 +330,8 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
         </div>
 
         {/* HERO CONTROLS BUTTONS: High-visibility segmented control buttons */}
-        <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800">
-          <div className="grid grid-cols-2 gap-2 bg-slate-100/80 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="grid grid-cols-2 gap-2">
             {isPowerCut ? (
               <>
                 {/* POWER CONTROL: Button 1 (POWER ON - 230V LIVE) */}
@@ -352,14 +339,16 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
                   type="button"
                   onClick={handleTurnOnOrOpen}
                   disabled={isLoading || isPowerOn}
-                  className={`py-2 px-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  aria-label={t.powerOnShort}
+                  aria-pressed={isPowerOn}
+                  className={`min-h-11 py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed ${
                     isPowerOn
-                      ? 'bg-emerald-600 text-white shadow-sm ring-1 ring-emerald-500'
-                      : 'text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-200 hover:bg-white/80 dark:hover:bg-slate-700/80 disabled:opacity-40'
+                      ? 'bg-emerald-700 text-white border-emerald-700 dark:bg-emerald-600 dark:border-emerald-600'
+                      : 'bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 disabled:opacity-55'
                   }`}
                 >
                   <Zap className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">{t.turnPowerOn}</span>
+                  <span className="truncate">{t.powerOnShort}</span>
                 </button>
 
                 {/* POWER CONTROL: Button 2 (POWER OFF - CUT TO 0V) */}
@@ -367,14 +356,16 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
                   type="button"
                   onClick={handleTurnOffOrClose}
                   disabled={isLoading || isPowerOff}
-                  className={`py-2 px-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  aria-label={t.powerOffShort}
+                  aria-pressed={isPowerOff}
+                  className={`min-h-11 py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed ${
                     isPowerOff
-                      ? 'bg-amber-600 text-white shadow-sm ring-1 ring-amber-500'
-                      : 'text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-200 hover:bg-white/80 dark:hover:bg-slate-700/80 disabled:opacity-40'
+                      ? 'bg-amber-600 text-white border-amber-600 dark:bg-amber-500 dark:border-amber-500'
+                      : 'bg-white dark:bg-slate-800 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-900 hover:bg-amber-50 dark:hover:bg-amber-950/50 disabled:opacity-55'
                   }`}
                 >
                   <ZapOff className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">{t.turnPowerOff}</span>
+                  <span className="truncate">{t.powerOffShort}</span>
                 </button>
               </>
             ) : (
@@ -384,20 +375,22 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
                   type="button"
                   onClick={handleTurnOnOrOpen}
                   disabled={isLoading || isActive}
-                  className={`py-2 px-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  aria-label={isValve ? t.openValve : type === 'fan' ? t.startFan : type === 'extinguisher' ? t.startExtinguisher : t.soundAlarm}
+                  aria-pressed={isActive}
+                  className={`min-h-11 py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed ${
                     isActive
                       ? isValve
-                        ? 'bg-emerald-600 text-white shadow-sm ring-1 ring-emerald-500'
+                        ? 'bg-emerald-700 text-white border-emerald-700 dark:bg-emerald-600 dark:border-emerald-600'
                         : type === 'extinguisher'
-                        ? 'bg-sky-600 text-white shadow-sm ring-1 ring-sky-500'
+                        ? 'bg-sky-700 text-white border-sky-700 dark:bg-sky-600 dark:border-sky-600'
                         : type === 'buzzer'
-                        ? 'bg-rose-600 text-white shadow-sm ring-1 ring-rose-500'
-                        : 'bg-cyan-600 text-white shadow-sm ring-1 ring-cyan-500'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-slate-700/80 disabled:opacity-40'
+                        ? 'bg-rose-700 text-white border-rose-700 dark:bg-rose-600 dark:border-rose-600'
+                        : 'bg-cyan-700 text-white border-cyan-700 dark:bg-cyan-600 dark:border-cyan-600'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 disabled:opacity-55'
                   }`}
                 >
                   {isLoading && !isActive ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <Clock3 className="w-3.5 h-3.5" />
                   ) : isValve ? (
                     <Unlock className="w-3.5 h-3.5" />
                   ) : type === 'buzzer' ? (
@@ -423,14 +416,16 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
                   type="button"
                   onClick={handleTurnOffOrClose}
                   disabled={isLoading || !isActive}
-                  className={`py-2 px-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  aria-label={isValve ? t.closeValve : type === 'fan' ? t.stopFan : type === 'extinguisher' ? t.stopExtinguisher : t.silenceAlarm}
+                  aria-pressed={!isActive}
+                  className={`min-h-11 py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed ${
                     !isActive
-                      ? 'bg-slate-800 dark:bg-slate-700 text-white shadow-sm ring-1 ring-slate-600'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-slate-700/80 disabled:opacity-40'
+                      ? 'bg-slate-800 dark:bg-slate-700 text-white border-slate-800 dark:border-slate-600'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 disabled:opacity-55'
                   }`}
                 >
                   {isLoading && isActive ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <Clock3 className="w-3.5 h-3.5" />
                   ) : isValve ? (
                     <Lock className="w-3.5 h-3.5" />
                   ) : (
@@ -450,16 +445,6 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
             )}
           </div>
 
-          <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 font-medium mt-2 px-0.5">
-            <span className="flex items-center gap-1">
-              <Cpu className="w-3 h-3" />
-              <span>{t.hardwareRelayBus}</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <Shield className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-              <span>Fail-Safe Active</span>
-            </span>
-          </div>
         </div>
       </div>
 
@@ -471,7 +456,9 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
         confirmLabel={t.openValve}
         confirmVariant="warning"
         isLoading={isLoading}
+        confirmDisabled={canOpenValve?.allowed === false}
         onConfirm={() => {
+          if (canOpenValve?.allowed === false) return;
           setShowValveConfirm(false);
           onToggle('valve', 'OPEN');
         }}
@@ -533,8 +520,8 @@ export const ActuatorCard: React.FC<ActuatorCardProps> = ({
           <div className="space-y-2 text-xs text-slate-600 dark:text-slate-300">
             <p>
               {pendingPowerTargetState === 'ON'
-                ? 'Relay 4 will re-energize the 230V AC mains bus. Ensure that room air is clear of combustible gas before switching ON.'
-                : 'Relay 4 will de-energize the 230V AC contactor to 0V (Power OFF) to eliminate all potential electrical spark hazards.'}
+                ? t.powerOnConfirmDesc
+                : t.powerOffConfirmDesc}
             </p>
           </div>
         }

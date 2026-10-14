@@ -13,7 +13,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   className = '',
   size = 'md',
 }) => {
-  const { language, setLanguage, languageNames } = useLanguage();
+  const { language, setLanguage, languageNames, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -65,8 +65,8 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           className={`inline-flex items-center justify-center rounded-xl transition-all duration-200 cursor-pointer border shadow-2xs ${
             size === 'sm' ? 'w-8 h-8 p-1.5' : 'w-9 h-9 p-2'
           } bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700`}
-          title={`Change Language (${currentLang.label})`}
-          aria-label="Change Language"
+          title={`${t.selectLanguage} (${currentLang.label})`}
+          aria-label={t.selectLanguage}
           aria-expanded={isOpen}
         >
           <Globe className="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400" />
@@ -75,7 +75,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         {isOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 z-50 text-xs">
             <div className="px-3.5 py-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 mb-1">
-              Select Language
+              {t.selectLanguage}
             </div>
             {languageNames.map((item) => {
               const isActive = item.code === language;
@@ -113,8 +113,8 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-semibold transition-colors shadow-2xs cursor-pointer"
-        title="Change Language"
-        aria-label="Change Language"
+        title={t.selectLanguage}
+        aria-label={t.selectLanguage}
         aria-expanded={isOpen}
       >
         <Globe className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
@@ -125,7 +125,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       {isOpen && (
         <div className="absolute right-0 mt-1.5 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl py-1.5 z-50 text-xs">
           <div className="px-3.5 py-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 mb-1">
-            Language
+            {t.language}
           </div>
           {languageNames.map((item) => {
             const isActive = item.code === language;

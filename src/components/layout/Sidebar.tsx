@@ -10,12 +10,9 @@ import {
   ShieldCheck,
   FileText,
   Lock,
-  Wifi,
   X,
   CheckCircle2,
   LogOut,
-  Zap,
-  ZapOff,
 } from 'lucide-react';
 import { useDevice } from '../../context/DeviceContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -35,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isMobileOpen = false,
   onCloseMobile,
 }) => {
-  const { device, isOnline, firebaseProjectId } = useDevice();
+  const { device, isOnline } = useDevice();
   const { t } = useLanguage();
 
   const navItems = [
@@ -49,17 +46,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   const legalItems = [
-    { id: 'privacy', label: 'Privacy Policy', icon: Lock },
-    { id: 'terms', label: 'Terms & Conditions', icon: FileText },
+    { id: 'privacy', label: t.privacyPolicy, icon: Lock },
+    { id: 'terms', label: t.termsConditions, icon: FileText },
   ];
 
   const handleNavClick = (route: string) => {
     onNavigate(route);
     if (onCloseMobile) onCloseMobile();
   };
-
-  // Switch ON means Power ON (230V Live); Switch OFF means Power OFF (0V Cut)
-  const isPowerOn = device.actuators.powerCut?.state === 'ON';
 
   return (
     <>
@@ -98,7 +92,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 onClick={onCloseMobile}
                 className="md:hidden p-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                aria-label="Close navigation"
+                aria-label={t.close}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -129,18 +123,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </nav>
         </div>
 
-        {/* Bottom Section: Hardware status & Direct Sign Out */}
+        {/* Bottom Section: Device status & sign out */}
         <div className="p-3 space-y-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40">
-          {/* Hardware node status */}
           <div className="p-3 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 rounded-xl text-xs shadow-2xs">
-            <div className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wider mb-1.5 flex items-center justify-between">
-              <span>HARDWARE NODE</span>
-              <div className="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
-                <Wifi className="w-3 h-3" />
-                <span>{device.status.wifiRSSI} dBm</span>
-              </div>
-            </div>
-
             <div className="flex items-center justify-between">
               <span className="font-bold text-slate-900 dark:text-white truncate max-w-[120px]">
                 {device.info.name}
@@ -148,37 +133,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {isOnline ? (
                 <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Active</span>
+                  <span>{t.online}</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-1 text-slate-400 dark:text-slate-500 text-xs font-medium">
                   <span className="w-2 h-2 rounded-full bg-slate-400" />
-                  <span>Offline</span>
+                  <span>{t.offline}</span>
                 </div>
               )}
             </div>
 
-            {/* Mains Power status badge: Switch ON = Power ON (230V); Switch OFF = Power OFF (0V Cut) */}
-            <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-[11px]">
-              <span className="text-slate-500 dark:text-slate-400">Mains Power:</span>
-              <span
-                className={`font-bold flex items-center gap-1 ${
-                  isPowerOn ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'
-                }`}
-              >
-                {isPowerOn ? <Zap className="w-3 h-3" /> : <ZapOff className="w-3 h-3" />}
-                <span>{isPowerOn ? 'Power ON (230V)' : 'Power OFF (0V Cut)'}</span>
-              </span>
-            </div>
-
-            {/* Firebase Live Cloud Link */}
-            <div className="mt-1.5 pt-1.5 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-[10px] font-mono">
-              <span className="text-slate-400">Firebase DB:</span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>{firebaseProjectId}</span>
-              </span>
-            </div>
           </div>
 
           {/* Sign Out Button in Sidebar */}

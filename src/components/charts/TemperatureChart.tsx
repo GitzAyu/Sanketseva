@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { HistoricalReading } from '../../types/sensors';
 import { Thermometer } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface TemperatureChartProps {
   data: HistoricalReading[];
@@ -11,6 +12,7 @@ export const TemperatureChart: React.FC<TemperatureChartProps> = ({
   data,
   warningThreshold,
 }) => {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<'1H' | '6H' | '24H'>('1H');
 
   const filteredData = useMemo(() => {
@@ -52,7 +54,7 @@ export const TemperatureChart: React.FC<TemperatureChartProps> = ({
         <div className="flex items-center gap-2">
           <Thermometer className="w-4 h-4 text-amber-500" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-            Room Temperature History
+            {t.tempTrend}
           </h3>
         </div>
         <div className="flex items-center gap-1 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-semibold">
@@ -78,7 +80,7 @@ export const TemperatureChart: React.FC<TemperatureChartProps> = ({
         <line x1={padding.left} y1={padding.top + innerHeight} x2={chartWidth - padding.right} y2={padding.top + innerHeight} stroke="#94a3b825" />
         <line x1={padding.left} y1={yWarn} x2={chartWidth - padding.right} y2={yWarn} stroke="#d97706" strokeDasharray="4 3" strokeWidth="1.2" />
         <text x={chartWidth - padding.right} y={yWarn - 3} fill="#d97706" fontSize="9" textAnchor="end">
-          Warn {warningThreshold}
+          {t.warn} {warningThreshold}
         </text>
 
         {polylinePoints && (
@@ -93,9 +95,9 @@ export const TemperatureChart: React.FC<TemperatureChartProps> = ({
         )}
       </svg>
       <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-100 dark:border-slate-800">
-        <span>Min: {minTemp}°C</span>
-        <span>Latest: {filteredData[filteredData.length - 1]?.temperature ?? 0}°C</span>
-        <span>Max: {maxTemp}°C</span>
+        <span>{t.minimum}: {minTemp}°C</span>
+        <span>{t.latest}: {filteredData[filteredData.length - 1]?.temperature ?? 0}°C</span>
+        <span>{t.maximum}: {maxTemp}°C</span>
       </div>
     </div>
   );

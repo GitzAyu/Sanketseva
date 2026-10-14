@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { DeviceState, SystemMode, SafetyData } from '../types/device';
-import { HistoricalReading, SensorData } from '../types/sensors';
+import { HistoricalReading } from '../types/sensors';
 import { GasGuardEvent } from '../types/events';
 import { CommandAction, ActuatorTarget } from '../types/commands';
 import { evaluateSystemMode, validateValveOpenRequest } from '../utils/safety';
@@ -23,35 +23,35 @@ export const INITIAL_DEVICE_STATE: DeviceState = {
     deviceId: 'gasguard-001',
   },
   status: {
-    online: true,
-    lastSeen: Date.now(),
+    online: false,
+    lastSeen: 0,
     wifiRSSI: -54,
   },
   sensors: {
     gas: {
-      value: 335,
+      value: 0,
       status: 'NORMAL',
-      timestamp: Date.now(),
+      timestamp: 0,
     },
     smoke: {
-      value: 85,
+      value: 0,
       detected: false,
       status: 'NORMAL',
-      timestamp: Date.now(),
+      timestamp: 0,
     },
     temperature: {
-      value: 27.8,
+      value: 0,
       unit: '°C',
-      timestamp: Date.now(),
+      timestamp: 0,
     },
     humidity: {
-      value: 48,
+      value: 0,
       unit: '%',
-      timestamp: Date.now(),
+      timestamp: 0,
     },
     flame: {
       detected: false,
-      timestamp: Date.now(),
+      timestamp: 0,
     },
   },
   actuators: {
@@ -103,6 +103,7 @@ export interface DeviceContextType {
   isOnline: boolean;
   systemMode: SystemMode;
   sensorHistory: HistoricalReading[];
+  hasLiveTelemetry: boolean;
   events: GasGuardEvent[];
 
   // Firebase integration status
@@ -140,7 +141,7 @@ export interface DeviceContextType {
   testAudioAlarm: () => void;
   dismissEmergencyAlert: () => void;
 
-  // Sensor Hazard Test Bench / Simulator
+  // Retained for the unmounted local hazard demo panel.
   simulateHazard: (type: 'gas_leak' | 'fire' | 'smoke' | 'combined' | 'reset') => void;
 
   // Custom Domain Management
@@ -156,36 +157,9 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
   children,
 }) => {
   const [device, setDevice] = useState<DeviceState>(INITIAL_DEVICE_STATE);
-  const [sensorHistory, setSensorHistory] = useState<HistoricalReading[]>(() => {
-    // Generate initial realistic 1-hour trend history
-    const list: HistoricalReading[] = [];
-    const now = Date.now();
-    for (let i = 24; i >= 0; i--) {
-      const ts = now - i * 150000;
-      list.push({
-        timestamp: ts,
-        gas: Math.floor(310 + Math.sin(i * 0.5) * 25 + Math.random() * 15),
-        smoke: Math.floor(70 + Math.sin(i * 0.3) * 15 + Math.random() * 10),
-        temperature: Number((26.5 + Math.sin(i * 0.2) * 1.5 + Math.random() * 0.5).toFixed(1)),
-        humidity: Math.floor(48 + Math.cos(i * 0.4) * 4),
-        flame: false,
-      });
-    }
-    return list;
-  });
+  const [sensorHistory, setSensorHistory] = useState<HistoricalReading[]>([]);
 
-  const [events, setEvents] = useState<GasGuardEvent[]>([
-    {
-      id: 'evt-init',
-      type: 'SYSTEM_STARTED',
-      severity: 'INFO',
-      title: 'SanketSeva Safety System Initialized',
-      description: `ESP32 microcontroller online. Firebase live connection active (${firebaseConfig.projectId}). Actuators and power switch synchronized.`,
-      timestamp: Date.now() - 3600000,
-      actionTaken: 'Firebase connected & fail-safe interlocks armed',
-      resolved: true,
-    },
-  ]);
+  const [events, setEvents] = useState<GasGuardEvent[]>([]);
 
   const [commandFeedback, setCommandFeedback] = useState<{
     status: 'idle' | 'pending' | 'success' | 'error';
@@ -210,6 +184,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
 
   // Firebase integration state
   const [isFirebaseConnected, setIsFirebaseConnected] = useState<boolean>(false);
+  const [hasLiveTelemetry, setHasLiveTelemetry] = useState(false);
   const [firebaseSyncStatus, setFirebaseSyncStatus] = useState<'synced' | 'syncing' | 'connected' | 'idle'>('idle');
 
   // Initial Firebase sync and real-time subscription
@@ -268,6 +243,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
         }
 
         hasLiveTelemetryRef.current = true;
+        setHasLiveTelemetry(true);
         const timestamp = Number.isFinite(telemetry.updatedAt) ? telemetry.updatedAt : Date.now();
         setDevice((prev) => ({
           ...prev,
@@ -596,70 +572,12 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
     device.safety.emergency,
   ]);
 
-  // Periodic sensor drift simulation
+  // Keep connection status fresh without inventing sensor readings.
   useEffect(() => {
     const interval = setInterval(() => {
       setDevice((prev) => {
-        if (hasLiveTelemetryRef.current) {
-          const online = Date.now() - prev.status.lastSeen < 60000;
-          return prev.status.online === online
-            ? prev
-            : { ...prev, status: { ...prev.status, online } };
-        }
-
-        const isDangerous =
-          prev.sensors.flame.detected ||
-          prev.sensors.smoke.detected ||
-          prev.sensors.gas.value > 450;
-        if (isDangerous) return prev;
-
-        const jitterGas = Math.max(280, Math.min(390, prev.sensors.gas.value + (Math.random() * 8 - 4)));
-        const jitterSmoke = Math.max(60, Math.min(140, prev.sensors.smoke.value + (Math.random() * 4 - 2)));
-        const jitterTemp = Number((prev.sensors.temperature.value + (Math.random() * 0.2 - 0.1)).toFixed(1));
-        const now = Date.now();
-
-        const nextGasReading = {
-          value: Math.round(jitterGas),
-          status: 'NORMAL' as const,
-          timestamp: now,
-        };
-        const nextSmokeReading = {
-          value: Math.round(jitterSmoke),
-          detected: false,
-          status: 'NORMAL' as const,
-          timestamp: now,
-        };
-
-        const nextSensors: SensorData = {
-          ...prev.sensors,
-          gas: nextGasReading,
-          smoke: nextSmokeReading,
-          temperature: { ...prev.sensors.temperature, value: jitterTemp, timestamp: now },
-        };
-
-        setSensorHistory((h) => {
-          const last = h[h.length - 1];
-          if (!last || now - last.timestamp > 30000) {
-            return [
-              ...h.slice(-59),
-              {
-                timestamp: now,
-                gas: nextGasReading.value,
-                smoke: nextSmokeReading.value,
-                temperature: jitterTemp,
-                humidity: prev.sensors.humidity.value,
-                flame: false,
-              },
-            ];
-          }
-          return h;
-        });
-
-        return {
-          ...prev,
-          status: { ...prev.status, lastSeen: now },
-          sensors: nextSensors,
-        };
+        const online = hasLiveTelemetryRef.current && Date.now() - prev.status.lastSeen < 60000;
+        return prev.status.online === online ? prev : { ...prev, status: { ...prev.status, online } };
       });
     }, 4000);
 
@@ -678,6 +596,11 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
       const commandId = `cmd-${now.toString(36)}-${Math.random().toString(36).substring(2, 6)}`;
 
       if (target === 'valve' && action === 'OPEN') {
+        if (!hasLiveTelemetryRef.current) {
+          const msg = 'Valve opening is blocked until live sensor readings arrive from the device.';
+          setCommandFeedback({ status: 'error', message: msg });
+          return { success: false, commandId, status: 'REJECTED', message: msg };
+        }
         const check = validateValveOpenRequest(device.sensors, device.safety);
         if (!check.allowed) {
           const msg = check.reason || 'Hardware interlock rejected valve opening for safety.';
@@ -1083,6 +1006,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
         isOnline,
         systemMode,
         sensorHistory,
+        hasLiveTelemetry,
         events,
         isFirebaseConnected,
         firebaseProjectId: firebaseConfig.projectId,

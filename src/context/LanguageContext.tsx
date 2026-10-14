@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { Language, translations, TranslationDictionary } from '../i18n/translations';
 
 interface LanguageContextType {
@@ -41,6 +41,10 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   const t = translations[language] || translations.en;
+
+  useEffect(() => {
+    document.documentElement.lang = language === 'bho' ? 'hi' : language;
+  }, [language]);
 
   return (
     <LanguageContext.Provider

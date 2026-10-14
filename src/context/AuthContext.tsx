@@ -40,11 +40,11 @@ function authErrorMessage(error: unknown): string {
     case 'auth/invalid-email':
       return 'Enter a valid email address.';
     case 'auth/operation-not-allowed':
-      return 'Email and password sign-in is not enabled in Firebase Authentication.';
+      return 'Email and password sign-in is not available. Contact your system administrator.';
     case 'auth/network-request-failed':
-      return 'Could not reach Firebase. Check your internet connection and try again.';
+      return 'Could not connect. Check your internet connection and try again.';
     default:
-      return error instanceof Error ? error.message : 'Firebase Authentication failed.';
+      return error instanceof Error ? error.message : 'Sign-in failed. Please try again.';
   }
 }
 

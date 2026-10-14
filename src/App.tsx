@@ -12,6 +12,7 @@ import { MobileNavigation } from './components/layout/MobileNavigation';
 import { ConfirmationModal } from './components/common/ConfirmationModal';
 import { EmergencyAudioBanner } from './components/common/EmergencyAudioBanner';
 import { AlertNotificationPopup } from './components/common/AlertNotificationPopup';
+import { useLanguage } from './context/LanguageContext';
 
 // Pages
 import { Login } from './pages/Login';
@@ -28,6 +29,7 @@ import { TermsConditions } from './pages/TermsConditions';
 function MainLayout() {
   const { user, logout } = useAuth();
   const { sendCommand } = useDevice();
+  const { t } = useLanguage();
   const [currentRoute, setCurrentRoute] = useState<string>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showGlobalEmergencyModal, setShowGlobalEmergencyModal] = useState(false);
@@ -107,21 +109,13 @@ function MainLayout() {
       {/* Global Header Emergency Shutdown Modal */}
       <ConfirmationModal
         isOpen={showGlobalEmergencyModal}
-        title="CONFIRM IMMEDIATE EMERGENCY SHUTDOWN"
-        description="High-priority broadcast to ESP32: fuel valve closure, mains power cut to prevent sparks, alarm buzzer activation, and ventilation engagement."
-        confirmLabel="CONFIRM EMERGENCY SHUTDOWN"
+        title={t.confirmEmergencyShutdown}
+        description={t.emergencyLockdownSubtitle}
+        confirmLabel={t.confirmEmergencyShutdown}
         confirmVariant="danger"
         isLoading={isEmergencyLoading}
         onConfirm={handleGlobalEmergency}
         onCancel={() => setShowGlobalEmergencyModal(false)}
-        details={
-          <div className="space-y-1.5 text-xs">
-            <p className="text-red-700 dark:text-red-400 font-semibold">Priority 0 Safety Bus Directive:</p>
-            <p className="text-slate-600 dark:text-slate-400">
-              The microcontroller will immediately de-energize the fuel solenoid relay, trip the 230V mains breaker to 0V (Power OFF), and assert the audible alarm siren & popup notification.
-            </p>
-          </div>
-        }
       />
     </div>
   );
@@ -129,6 +123,7 @@ function MainLayout() {
 
 export default function App() {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const [unauthLegalView, setUnauthLegalView] = useState<'privacy' | 'terms' | null>(null);
 
   if (loading) {
@@ -136,7 +131,7 @@ export default function App() {
       <div className="min-h-screen bg-[#f8fafc] dark:bg-[#090d16] flex flex-col items-center justify-center p-4">
         <div className="w-8 h-8 border-2 border-emerald-300 border-t-emerald-700 dark:border-emerald-600 dark:border-t-emerald-400 rounded-full animate-spin mb-4" />
         <span className="text-xs font-mono text-emerald-800 dark:text-emerald-400 font-semibold">
-          Initializing SanketSeva Telemetry Bus & Firebase...
+          {t.loading}
         </span>
       </div>
     );

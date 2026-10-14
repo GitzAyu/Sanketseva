@@ -5,10 +5,10 @@ import {
   Save,
   AlertCircle,
   CheckCircle2,
-  Cpu,
   Volume2,
   ZapOff,
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export const Settings: React.FC = () => {
   const {
@@ -19,8 +19,8 @@ export const Settings: React.FC = () => {
     toggleAudioMute,
     alertSoundStyle,
     setAlertSoundStyle,
-    firebaseProjectId,
   } = useDevice();
+  const { t } = useLanguage();
 
   const [gasWarn, setGasWarn] = useState(device.safety.gasWarningThreshold.toString());
   const [gasDanger, setGasDanger] = useState(device.safety.gasDangerThreshold.toString());
@@ -47,19 +47,19 @@ export const Settings: React.FC = () => {
     const td = parseFloat(tempDanger);
 
     if (isNaN(gw) || isNaN(gd) || isNaN(sd) || isNaN(tw) || isNaN(td)) {
-      setValidationError('All threshold values must be valid numbers.');
+      setValidationError(t.validNumberError);
       return;
     }
     if (gw <= 0 || gd <= 0 || sd <= 0) {
-      setValidationError('Threshold values must be greater than zero.');
+      setValidationError(t.positiveValueError);
       return;
     }
     if (gd <= gw) {
-      setValidationError('Gas Danger Threshold must be strictly higher than Warning Threshold.');
+      setValidationError(t.gasLimitOrderError);
       return;
     }
     if (td <= tw) {
-      setValidationError('Temperature Danger Threshold must be strictly higher than Warning Threshold.');
+      setValidationError(t.tempLimitOrderError);
       return;
     }
 
@@ -75,7 +75,7 @@ export const Settings: React.FC = () => {
     });
 
     if (!result.success) {
-      setValidationError(`Could not save settings to Firebase: ${result.error || 'Check your connection and security rules.'}`);
+      setValidationError(`${t.saveSettingsError}${result.error ? ` (${result.error})` : ''}`);
       return;
     }
 
@@ -90,11 +90,11 @@ export const Settings: React.FC = () => {
         <div className="flex items-center gap-2">
           <SettingsIcon className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
           <h1 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
-            System Configuration & Operational Parameters
+            {t.systemConfigTitle}
           </h1>
         </div>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Configure automatic safety thresholds, mains power cut triggers, and audible sound sirens
+          {t.systemConfigDesc}
         </p>
       </div>
 
@@ -102,11 +102,11 @@ export const Settings: React.FC = () => {
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
         <div className="flex items-center gap-2 mb-1">
           <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-            Safety Limits & Auto-Cutoff Calibration
+            {t.thresholdSettings}
           </h2>
         </div>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
-          These limits are synchronized to the ESP32 microcontroller memory. When triggered, the hardware controller immediately executes emergency protocols (isolates gas valve, trips 230V mains power cut to OFF, and activates sound siren & popup alert).
+          {t.autoCutoffHelp}
         </p>
 
         {validationError && (
@@ -119,7 +119,7 @@ export const Settings: React.FC = () => {
         {saveSuccess && (
           <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <span>Safety threshold parameters updated and synced successfully with ESP32!</span>
+            <span>{t.safetySettingsSaved}</span>
           </div>
         )}
 
@@ -128,7 +128,7 @@ export const Settings: React.FC = () => {
             {/* Gas Warning */}
             <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 rounded-2xl">
               <label htmlFor="gas-warn" className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                LPG Gas Warning Limit (ADC)
+                {t.gasWarningLabel}
               </label>
               <input
                 id="gas-warn"
@@ -140,14 +140,14 @@ export const Settings: React.FC = () => {
                 className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
               />
               <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 block">
-                Starts exhaust fan to evacuate minor odor (Default: 400).
+                {t.gasWarningHelp}
               </span>
             </div>
 
             {/* Gas Danger */}
             <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 rounded-2xl">
               <label htmlFor="gas-danger" className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                LPG Gas Danger Limit (ADC)
+                {t.gasDangerLabel}
               </label>
               <input
                 id="gas-danger"
@@ -159,14 +159,14 @@ export const Settings: React.FC = () => {
                 className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
               />
               <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 block">
-                Shuts gas valve, switches mains power OFF & sounds siren (Default: 500).
+                {t.gasDangerHelp}
               </span>
             </div>
 
             {/* Smoke Danger */}
             <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 rounded-2xl">
               <label htmlFor="smoke-danger" className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                Smoke Danger Threshold (PPM)
+                {t.smokeDangerLabel}
               </label>
               <input
                 id="smoke-danger"
@@ -178,14 +178,14 @@ export const Settings: React.FC = () => {
                 className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
               />
               <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 block">
-                Triggers smoke alarm siren, alert popup and ventilation (Default: 300).
+                {t.smokeDangerHelp}
               </span>
             </div>
 
             {/* Temperature Danger */}
             <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 rounded-2xl">
               <label htmlFor="temp-danger" className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
-                Temperature Danger Threshold (°C)
+                {t.tempDangerLabel}
               </label>
               <input
                 id="temp-danger"
@@ -198,7 +198,7 @@ export const Settings: React.FC = () => {
                 className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
               />
               <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 block">
-                Critical room heat requiring emergency cutoff (Default: 60.0 °C).
+                {t.tempDangerHelp}
               </span>
             </div>
           </div>
@@ -208,11 +208,11 @@ export const Settings: React.FC = () => {
             <div className="flex items-center gap-2 mb-2">
               <ZapOff className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                Automatic Mains Power Cut Interlock Policies
+                {t.safetyAutoCutoffTitle}
               </h3>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
-              Automatically switches mains electricity OFF (0V Cut) when dangerous hazards are detected to prevent electrical sparks from causing explosions.
+              {t.autoCutoffHelp}
             </p>
             <div className="space-y-2 text-xs font-semibold">
               <label className="flex items-center gap-2.5 cursor-pointer">
@@ -223,7 +223,7 @@ export const Settings: React.FC = () => {
                   className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                 />
                 <span className="text-slate-800 dark:text-slate-200">
-                  Auto-switch Mains Power OFF when LPG Gas exceeds Danger Threshold
+                  {t.autoPowerLeak}
                 </span>
               </label>
 
@@ -235,7 +235,7 @@ export const Settings: React.FC = () => {
                   className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                 />
                 <span className="text-slate-800 dark:text-slate-200">
-                  Auto-switch Mains Power OFF when Optical Flame Sensor trips
+                  {t.autoPowerFire}
                 </span>
               </label>
 
@@ -247,7 +247,7 @@ export const Settings: React.FC = () => {
                   className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                 />
                 <span className="text-slate-800 dark:text-slate-200">
-                  Auto-switch Mains Power OFF when Dense Smoke is detected
+                  {t.autoPowerSmoke}
                 </span>
               </label>
             </div>
@@ -259,7 +259,7 @@ export const Settings: React.FC = () => {
               className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl transition-colors flex items-center gap-2 shadow-xs cursor-pointer"
             >
               <Save className="w-4 h-4" />
-              <span>SAVE CONFIGURATION</span>
+              <span>{t.saveConfiguration}</span>
             </button>
           </div>
         </form>
@@ -272,10 +272,10 @@ export const Settings: React.FC = () => {
             <Volume2 className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
             <div>
               <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                Emergency Alert Sound Calibration
+                {t.soundSettingsTitle}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Choose the audio style when sensors detect LPG gas, fire, or smoke
+                {t.audioAlertTitle}
               </p>
             </div>
           </div>
@@ -284,7 +284,7 @@ export const Settings: React.FC = () => {
             onClick={testAudioAlarm}
             className="px-3.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs font-bold transition-colors cursor-pointer self-start sm:self-auto"
           >
-            Play Sound Preview
+            {t.playSoundPreview}
           </button>
         </div>
 
@@ -293,21 +293,21 @@ export const Settings: React.FC = () => {
           {[
             {
               id: 'polite' as const,
-              name: 'Polite Chime (Recommended)',
-              desc: 'Gentle, pleasant harmonic acoustic chime. Clear warning without anxiety.',
-              badge: 'Default',
+              name: `${t.politeChime} (${t.recommended})`,
+              desc: t.politeChimeDesc,
+              badge: t.defaultBadge,
             },
             {
               id: 'soft_pulse' as const,
-              name: 'Soft Pulse',
-              desc: 'Calm, soothing sine wave swell at comfortable low volume.',
-              badge: 'Calm',
+              name: t.softPulse,
+              desc: t.softPulseDesc,
+              badge: t.calmBadge,
             },
             {
               id: 'classic' as const,
-              name: 'Standard Siren',
-              desc: 'Traditional high-decibel industrial alternating siren.',
-              badge: 'Loud',
+              name: t.standardSiren,
+              desc: t.standardSirenDesc,
+              badge: t.loudBadge,
             },
           ].map((style) => (
             <div
@@ -343,9 +343,9 @@ export const Settings: React.FC = () => {
 
         <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
           <div>
-            <span className="font-bold text-slate-800 dark:text-slate-200 block">Sound Mute State</span>
+            <span className="font-bold text-slate-800 dark:text-slate-200 block">{t.soundMuteState}</span>
             <span className="text-[11px] text-slate-500 dark:text-slate-400">
-              {isAudioMuted ? 'Muted by operator' : 'Audible and Armed for all hazard channels'}
+              {isAudioMuted ? t.mutedByYou : t.soundArmed}
             </span>
           </div>
           <button
@@ -357,38 +357,11 @@ export const Settings: React.FC = () => {
                 : 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200'
             }`}
           >
-            {isAudioMuted ? 'Unmute Sound' : 'Mute Sound'}
+            {isAudioMuted ? t.unmuteSound : t.muteSound}
           </button>
         </div>
       </div>
 
-      {/* Device Hardware Info */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
-        <div className="flex items-center gap-2 mb-4">
-          <Cpu className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
-          <h2 className="text-sm font-bold text-slate-900 dark:text-white">Device Hardware Configuration</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 rounded-2xl">
-            <span className="text-slate-400 dark:text-slate-400 block text-[11px] font-semibold">UNIT NAME</span>
-            <span className="text-slate-900 dark:text-white font-bold text-sm mt-0.5 block">{device.info.name}</span>
-          </div>
-          <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 rounded-2xl">
-            <span className="text-slate-400 dark:text-slate-400 block text-[11px] font-semibold">DEVICE ID</span>
-            <span className="text-emerald-700 dark:text-emerald-400 font-bold text-sm mt-0.5 block">{device.info.deviceId}</span>
-          </div>
-          <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 rounded-2xl">
-            <span className="text-slate-400 dark:text-slate-400 block text-[11px] font-semibold">INSTALLATION LOCATION</span>
-            <span className="text-slate-800 dark:text-slate-200 font-medium text-sm mt-0.5 block">{device.info.location}</span>
-          </div>
-          <div className="p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 rounded-2xl">
-            <span className="text-slate-400 dark:text-slate-400 block text-[11px] font-semibold">FIREBASE PROJECT</span>
-            <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold text-sm mt-0.5 block">
-              {firebaseProjectId} (Connected)
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

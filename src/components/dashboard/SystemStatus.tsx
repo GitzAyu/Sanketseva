@@ -45,7 +45,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
       case 'WARNING':
         return {
           title: t.systemWarning,
-          description: `${t.systemWarningDesc} (Gas: ${gasValue} ADC • Smoke: ${smokeValue} PPM • Temp: ${tempValue} °C)`,
+          description: `${t.systemWarningDesc} (${t.sensorGas}: ${gasValue} ADC • ${t.sensorSmoke}: ${smokeValue} PPM • ${t.sensorTemp}: ${tempValue} °C)`,
           bg: 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-300/80 dark:border-amber-900/60 text-slate-800 dark:text-slate-100',
           dot: 'bg-amber-500',
           titleColor: 'text-amber-950 dark:text-amber-300',
@@ -112,7 +112,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
                   className="ml-2 px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-600 text-white hover:bg-rose-700 transition-colors inline-flex items-center gap-1 cursor-pointer"
                 >
                   <ExternalLink className="w-3 h-3" />
-                  <span>View Alert Popup</span>
+                  <span>{t.viewAlertPopup}</span>
                 </button>
               )}
             </div>
@@ -126,7 +126,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
         <div className="flex items-center gap-3 flex-wrap text-xs bg-white/80 dark:bg-slate-900/80 p-2 rounded-xl border border-slate-200/60 dark:border-slate-800/60">
           {/* Gas */}
           <div className="flex items-center gap-1.5 px-2 py-0.5">
-            <span className="text-slate-400 text-[11px] font-medium">Gas:</span>
+            <span className="text-slate-400 text-[11px] font-medium">{t.statusGas}:</span>
             <span
               className={`font-semibold ${
                 gasValue > 500
@@ -136,7 +136,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
                   : 'text-emerald-700 dark:text-emerald-400'
               }`}
             >
-              {gasValue > 500 ? 'Danger' : gasValue > 400 ? 'Elevated' : 'Clean'}
+              {gasValue > 500 ? t.statusDanger : gasValue > 400 ? t.statusElevated : t.statusClean}
             </span>
           </div>
 
@@ -144,13 +144,13 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
 
           {/* Fire */}
           <div className="flex items-center gap-1.5 px-2 py-0.5">
-            <span className="text-slate-400 text-[11px] font-medium">Fire:</span>
+            <span className="text-slate-400 text-[11px] font-medium">{t.statusFire}:</span>
             <span
               className={`font-semibold ${
                 flameDetected ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-emerald-700 dark:text-emerald-400'
               }`}
             >
-              {flameDetected ? 'Alert' : 'None'}
+              {flameDetected ? t.statusAlert : t.statusNone}
             </span>
           </div>
 
@@ -158,7 +158,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
 
           {/* Smoke */}
           <div className="flex items-center gap-1.5 px-2 py-0.5">
-            <span className="text-slate-400 text-[11px] font-medium">Smoke:</span>
+            <span className="text-slate-400 text-[11px] font-medium">{t.statusSmoke}:</span>
             <span
               className={`font-semibold ${
                 smokeDetected || smokeValue > 300
@@ -166,7 +166,7 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
                   : 'text-emerald-700 dark:text-emerald-400'
               }`}
             >
-              {smokeDetected || smokeValue > 300 ? `${smokeValue} PPM` : 'Clean'}
+              {smokeDetected || smokeValue > 300 ? `${smokeValue} PPM` : t.statusClean}
             </span>
           </div>
 
@@ -174,13 +174,13 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
 
           {/* Power: switch on = Power ON (230V); switch off = Power OFF (0V Cut) */}
           <div className="flex items-center gap-1.5 px-2 py-0.5">
-            <span className="text-slate-400 text-[11px] font-medium">Power:</span>
+            <span className="text-slate-400 text-[11px] font-medium">{t.statusPower}:</span>
             <span
               className={`font-semibold ${
                 isPowerOn ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400 font-bold'
               }`}
             >
-              {isPowerOn ? 'ON (230V)' : 'OFF (0V Cut)'}
+              {isPowerOn ? t.powerOnShort : t.powerOffShort}
             </span>
           </div>
 
@@ -188,13 +188,13 @@ export const SystemStatus: React.FC<SystemStatusProps> = ({
 
           {/* Valve */}
           <div className="flex items-center gap-1.5 px-2 py-0.5">
-            <span className="text-slate-400 text-[11px] font-medium">Valve:</span>
+            <span className="text-slate-400 text-[11px] font-medium">{t.statusValve}:</span>
             <span
               className={`font-semibold ${
                 valveState === 'OPEN' ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400'
               }`}
             >
-              {valveState === 'OPEN' ? 'Open' : 'Shut'}
+              {valveState === 'OPEN' ? t.statusOpen : t.statusShut}
             </span>
           </div>
         </div>

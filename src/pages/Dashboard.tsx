@@ -3,12 +3,13 @@ import { useDevice } from '../context/DeviceContext';
 import { useLanguage } from '../context/LanguageContext';
 import { SystemStatus } from '../components/dashboard/SystemStatus';
 import { SensorCard } from '../components/dashboard/SensorCard';
+import { HouseActuatorLayout } from '../components/dashboard/HouseActuatorLayout';
 import { ActuatorCard } from '../components/dashboard/ActuatorCard';
 import { EmergencyButton } from '../components/dashboard/EmergencyButton';
 import { GasChart } from '../components/charts/GasChart';
-import { HazardTestBench } from '../components/dashboard/HazardTestBench';
 import { validateValveOpenRequest } from '../utils/safety';
 import { formatTimestamp } from '../utils/formatting';
+import { eventLabel, severityLabel } from '../utils/eventLabels';
 import {
   AlertCircle,
   CheckCircle2,
@@ -26,20 +27,21 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const {
     device,
+    hasLiveTelemetry,
     systemMode,
     sensorHistory,
     events,
     sendCommand,
     commandFeedback,
     clearCommandFeedback,
-    firebaseProjectId,
   } = useDevice();
   const { t } = useLanguage();
   const [showGuideModal, setShowGuideModal] = useState(false);
 
   const valveSafety = useMemo(() => {
+    if (!hasLiveTelemetry) return { allowed: false, reason: t.valveNeedsLiveReadings };
     return validateValveOpenRequest(device.sensors, device.safety);
-  }, [device.sensors, device.safety]);
+  }, [device.sensors, device.safety, hasLiveTelemetry, t.valveNeedsLiveReadings]);
 
   const handleActuatorToggle = async (
     target: 'valve' | 'fan' | 'buzzer' | 'extinguisher' | 'powerCut',
@@ -113,24 +115,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs">
         <div>
           <h1 className="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-            <span>Kitchen Safety & Telemetry Console</span>
+            <span>{t.dashboardTitle}</span>
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-semibold">
-              Live Protection Active
+              {t.protectionActive}
             </span>
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Real-time LPG gas, fire and smoke monitoring with automatic mains power cut and audible popup notifications.
+            {t.dashboardSubtitle}
           </p>
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse" />
-            <span className="font-mono text-[11px] font-bold">Firebase: {firebaseProjectId}</span>
-          </div>
           {isPowerOff && (
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 text-xs font-bold">
               <ZapOff className="w-3.5 h-3.5" />
-              <span>POWER OFF (0V CUT)</span>
+              <span>{t.powerOffBadge}</span>
             </div>
           )}
           <button
@@ -157,6 +155,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         extinguisherState={device.actuators.extinguisher?.state || 'OFF'}
       />
 
+      <HouseActuatorLayout />
+
       {/* 2. Command Feedback Notification */}
       {commandFeedback.status !== 'idle' && (
         <div
@@ -178,28 +178,25 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             {commandFeedback.status === 'error' && (
               <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
             )}
-            <span className="font-medium">{commandFeedback.message}</span>
+            <span className="font-medium">{commandFeedback.status === 'pending' ? t.working : commandFeedback.status === 'success' ? t.commandSaved : t.commandFailed}</span>
           </div>
           <button
             onClick={clearCommandFeedback}
             className="text-xs underline opacity-80 hover:opacity-100 ml-4 font-semibold text-slate-700 dark:text-slate-300 cursor-pointer"
           >
-            Dismiss
+            {t.dismiss}
           </button>
         </div>
       )}
-
-      {/* 3. Interactive Sensor Hazard Simulation & Sound Testing Bench */}
-      <HazardTestBench />
 
       {/* 4. Live Sensor Telemetry Cards (LPG, Smoke, Flame, Temperature, Humidity) */}
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xs font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">
-            Environmental Sensors (Live Readings)
+            {t.liveReadingsTitle}
           </h2>
           <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
-            Active monitoring array with audible siren & popup trigger
+            {t.monitoringHeaderSubtitle}
           </span>
         </div>
 
@@ -207,15 +204,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* LPG Sensor */}
           <SensorCard
             type="gas"
+            isLive={hasLiveTelemetry}
             title={t.sensorGas}
             value={device.sensors.gas.value}
             unit="ADC"
             statusText={
               device.sensors.gas.status === 'DANGER'
-                ? 'DANGER (LEAK)'
+                ? t.statusDanger
                 : device.sensors.gas.status === 'WARNING'
-                ? 'ELEVATED'
-                : 'CLEAN AIR'
+                ? t.statusWarning
+                : t.statusSafe
             }
             statusVariant={
               device.sensors.gas.status === 'DANGER'
@@ -231,15 +229,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Smoke Sensor */}
           <SensorCard
             type="smoke"
+            isLive={hasLiveTelemetry}
             title={t.sensorSmoke}
             value={device.sensors.smoke.value}
             unit="PPM"
             statusText={
               device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold
-                ? 'DENSE SMOKE'
+                ? t.statusDanger
                 : device.sensors.smoke.value >= 200
-                ? 'SMOKE HAZE'
-                : 'CLEAR AIR'
+                ? t.statusWarning
+                : t.statusSafe
             }
             statusVariant={
               device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold
@@ -255,9 +254,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Fire Sensor */}
           <SensorCard
             type="flame"
+            isLive={hasLiveTelemetry}
             title={t.sensorFlame}
-            value={device.sensors.flame.detected ? 'FIRE DETECTED' : 'CLEAR'}
-            statusText={device.sensors.flame.detected ? 'FIRE DETECTED' : 'NO FIRE'}
+            value={device.sensors.flame.detected ? t.flameDetected : t.flameClear}
+            statusText={device.sensors.flame.detected ? t.flameDetected : t.flameClear}
             statusVariant={device.sensors.flame.detected ? 'DANGER' : 'SAFE'}
             simpleExplanation={flameExplanation}
           />
@@ -265,15 +265,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Room Temperature */}
           <SensorCard
             type="temperature"
+            isLive={hasLiveTelemetry}
             title={t.sensorTemp}
             value={device.sensors.temperature.value}
             unit="°C"
             statusText={
               device.sensors.temperature.value >= device.safety.temperatureDangerThreshold
-                ? 'HIGH HEAT'
+                ? t.statusDanger
                 : device.sensors.temperature.value >= device.safety.temperatureWarningThreshold
-                ? 'WARM'
-                : 'NORMAL'
+                ? t.statusWarning
+                : t.statusNormal
             }
             statusVariant={
               device.sensors.temperature.value >= device.safety.temperatureDangerThreshold
@@ -289,12 +290,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Air Humidity */}
           <SensorCard
             type="humidity"
+            isLive={hasLiveTelemetry}
             title={t.sensorHumidity}
             value={device.sensors.humidity.value}
             unit="%"
-            statusText="COMFORTABLE"
+            statusText={t.statusComfortable}
             statusVariant="SAFE"
-            simpleExplanation="Normal kitchen relative moisture."
+            simpleExplanation={t.sensorHumidityDesc}
             progressPercent={device.sensors.humidity.value}
           />
         </div>
@@ -302,11 +304,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
       {/* 5. Live Gas & Smoke Trend Graph */}
       <section>
-        <GasChart
-          data={sensorHistory}
-          warningThreshold={device.safety.gasWarningThreshold}
-          dangerThreshold={device.safety.gasDangerThreshold}
-        />
+        {hasLiveTelemetry ? (
+          <GasChart
+            data={sensorHistory}
+            warningThreshold={device.safety.gasWarningThreshold}
+            dangerThreshold={device.safety.gasDangerThreshold}
+          />
+        ) : (
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 text-sm text-slate-500 dark:text-slate-400">{t.waitingForSensors}</div>
+        )}
       </section>
 
       {/* 6. Physical Safety Actuators (Switch ON = Power ON, Switch OFF = Power OFF) */}
@@ -317,7 +323,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               {t.actuatorsTitle}
             </h2>
             <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
-              Controls gas solenoid, mains electricity power, ventilation fan, water deluge, and siren
+              {t.equipmentSubtitle}
             </span>
           </div>
         </div>
@@ -424,10 +430,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                           : 'text-slate-800 dark:text-slate-200'
                       }`}
                     >
-                      {evt.title}
-                    </p>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
-                      {evt.description}
+                      {eventLabel(evt.type, t)}
                     </p>
                   </div>
                 </div>
@@ -441,7 +444,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                       : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
                   }`}
                 >
-                  {evt.severity}
+                  {severityLabel(evt.severity, t)}
                 </span>
               </div>
             ))}

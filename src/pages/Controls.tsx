@@ -14,22 +14,23 @@ import {
   Zap,
 } from 'lucide-react';
 import { formatTimestamp } from '../utils/formatting';
+import { eventLabel, severityLabel } from '../utils/eventLabels';
 
 export const Controls: React.FC = () => {
   const {
     device,
+    hasLiveTelemetry,
     sendCommand,
     commandFeedback,
     clearCommandFeedback,
     events,
-    firebaseProjectId,
-    firebaseSyncStatus,
   } = useDevice();
   const { t } = useLanguage();
 
   const valveSafety = useMemo(() => {
+    if (!hasLiveTelemetry) return { allowed: false, reason: t.valveNeedsLiveReadings };
     return validateValveOpenRequest(device.sensors, device.safety);
-  }, [device.sensors, device.safety]);
+  }, [device.sensors, device.safety, hasLiveTelemetry, t.valveNeedsLiveReadings]);
 
   const handleActuatorToggle = async (
     target: 'valve' | 'fan' | 'buzzer' | 'extinguisher' | 'powerCut',
@@ -101,7 +102,7 @@ export const Controls: React.FC = () => {
             <button
               type="button"
               onClick={handleTurnPowerOff}
-              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+              className="min-h-11 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 text-white rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer"
             >
               <ZapOff className="w-4 h-4" />
               <span>{t.turnPowerOff}</span>
@@ -110,22 +111,13 @@ export const Controls: React.FC = () => {
             <button
               type="button"
               onClick={handleTurnPowerOn}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+              className="min-h-11 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 text-white rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer"
             >
               <Zap className="w-4 h-4" />
               <span>{t.turnPowerOn}</span>
             </button>
           )}
 
-          <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs text-emerald-950 dark:text-emerald-200 max-w-sm shadow-2xs">
-            <div className="flex items-center gap-1.5 font-bold mb-0.5 text-emerald-800 dark:text-emerald-300">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>Firebase Cloud Sync Active</span>
-            </div>
-            <span className="text-[11px] font-medium leading-relaxed">
-              Every actuator switch changes live in Firebase (<code className="font-mono text-[10px] text-emerald-700 dark:text-emerald-300 font-bold">{firebaseProjectId}</code>) and syncs bidirectionally with ESP32.
-            </span>
-          </div>
         </div>
       </div>
 
@@ -150,7 +142,7 @@ export const Controls: React.FC = () => {
             {commandFeedback.status === 'error' && (
               <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />
             )}
-            <span>{commandFeedback.message}</span>
+            <span>{commandFeedback.status === 'pending' ? t.working : commandFeedback.status === 'success' ? t.commandSaved : t.commandFailed}</span>
           </div>
           <button
             onClick={clearCommandFeedback}
@@ -273,15 +265,12 @@ export const Controls: React.FC = () => {
                           : 'text-slate-800 dark:text-slate-200'
                       }`}
                     >
-                      {evt.title}
+                      {eventLabel(evt.type, t)}
                     </span>
                   </div>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">
-                    {evt.description}
-                  </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800 self-start sm:self-auto">
-                  <span>{t.statusSafe}</span>
+                  <span>{severityLabel(evt.severity, t)}</span>
                 </div>
               </div>
             ))}

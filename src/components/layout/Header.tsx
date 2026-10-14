@@ -18,7 +18,6 @@ import { useLanguage } from '../../context/LanguageContext';
 import { LanguageSelector } from '../common/LanguageSelector';
 import { ThemeToggleButton } from '../common/ThemeToggleButton';
 import { EasyGuideModal } from '../dashboard/EasyGuideModal';
-import { FirebaseDiagnosticsModal } from '../common/FirebaseDiagnosticsModal';
 
 interface HeaderProps {
   userEmail?: string | null;
@@ -47,11 +46,9 @@ export const Header: React.FC<HeaderProps> = ({
     device,
     activeEmergencyAlert,
     openAlertPopup,
-    firebaseProjectId,
   } = useDevice();
   const { t } = useLanguage();
   const [showGuideModal, setShowGuideModal] = useState(false);
-  const [showFirebaseModal, setShowFirebaseModal] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const userDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -87,9 +84,9 @@ export const Header: React.FC<HeaderProps> = ({
       case 'profile':
         return t.navProfile;
       case 'privacy':
-        return 'Privacy Policy';
+        return t.privacyPolicy;
       case 'terms':
-        return 'Terms & Conditions';
+        return t.termsConditions;
       default:
         return t.navDashboard;
     }
@@ -108,7 +105,7 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={onOpenMobileMenu}
               className="md:hidden p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-              aria-label="Open navigation menu"
+              aria-label={t.menuLabel}
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -126,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* On desktop: Breadcrumb title */}
           <div className="hidden md:flex items-center gap-2 text-xs">
-            <span className="text-slate-400 dark:text-slate-500 font-medium">Console</span>
+            <span className="text-slate-400 dark:text-slate-500 font-medium">{t.console}</span>
             <span className="text-slate-300 dark:text-slate-600">/</span>
             <span className="font-bold text-slate-900 dark:text-white text-sm">
               {getRouteTitle()}
@@ -142,10 +139,10 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={openAlertPopup}
               className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg bg-rose-600 text-white animate-pulse hover:bg-rose-700 transition-colors cursor-pointer shadow-xs"
-              title="Click to view Alert Popup notification"
+              title={t.viewAlertPopup}
             >
               <AlertTriangle className="w-3.5 h-3.5" />
-              <span>ALERT POPUP</span>
+              <span>{t.viewAlertPopup}</span>
             </button>
           )}
 
@@ -161,24 +158,11 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
 
-          {/* Firebase Real-Time Cloud Sync Badge */}
-          <button
-            type="button"
-            onClick={() => setShowFirebaseModal(true)}
-            className="hidden md:flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors cursor-pointer"
-            title="Click to check live Firebase connection & diagnostics"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse" />
-            <span className="text-[11px] font-mono font-bold">
-              Firebase: {firebaseProjectId}
-            </span>
-          </button>
-
           {/* Power Status Badge: Shows POWER OFF when switch is OFF */}
           {isPowerOff && (
             <div className="hidden lg:flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 animate-pulse">
               <ZapOff className="w-3.5 h-3.5" />
-              <span>POWER OFF (0V CUT)</span>
+              <span>{t.powerOffBadge}</span>
             </div>
           )}
 
@@ -196,10 +180,10 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
               title={
                 isAudioMuted
-                  ? 'Sound alerts muted (Click to unmute)'
+                  ? t.mutedByYou
                   : isAlarmSounding
-                  ? 'Alert Sound Playing (Click to silence)'
-                  : 'Polite sound alerts active'
+                  ? t.audioAlarmPlaying
+                  : t.politeChime
               }
             >
               {isAudioMuted ? (
@@ -209,10 +193,10 @@ export const Header: React.FC<HeaderProps> = ({
               )}
               <span className="hidden xl:inline text-[11px] font-medium">
                 {isAudioMuted
-                  ? 'Sound Muted'
+                  ? t.mutedByYou
                   : isAlarmSounding
-                  ? 'Alarm Active'
-                  : 'Polite Chime'}
+                  ? t.audioAlarmPlaying
+                  : t.politeChime}
               </span>
             </button>
 
@@ -221,8 +205,8 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={testAudioAlarm}
               className="p-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg hover:bg-white dark:hover:bg-slate-700 transition-colors cursor-pointer"
-              title="Test polite alert chime"
-              aria-label="Test polite alert chime"
+              title={t.testSound}
+              aria-label={t.testSound}
             >
               <Bell className="w-3.5 h-3.5" />
             </button>
@@ -262,7 +246,7 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={() => setShowUserDropdown(!showUserDropdown)}
               className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
-              aria-label="User account menu"
+              aria-label={t.navProfile}
             >
               <span className="font-bold text-xs uppercase">
                 {userEmail ? userEmail.charAt(0) : 'O'}
@@ -322,8 +306,6 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Quick Guide Modal */}
       <EasyGuideModal isOpen={showGuideModal} onClose={() => setShowGuideModal(false)} />
 
-      {/* Firebase Diagnostics & Setup Modal */}
-      <FirebaseDiagnosticsModal isOpen={showFirebaseModal} onClose={() => setShowFirebaseModal(false)} />
     </>
   );
 };

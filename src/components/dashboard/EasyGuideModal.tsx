@@ -32,7 +32,7 @@ export const EasyGuideModal: React.FC<EasyGuideModalProps> = ({ isOpen, onClose 
       <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 text-slate-900 dark:text-slate-100 max-h-[90vh] overflow-y-auto transition-colors duration-200">
         <button
           onClick={onClose}
-          aria-label="Close dialog"
+          aria-label={t.close}
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
         >
           <X className="w-5 h-5" />
@@ -60,7 +60,7 @@ export const EasyGuideModal: React.FC<EasyGuideModalProps> = ({ isOpen, onClose 
               {t.howItWorks}
             </strong>
             <span className="font-medium">
-              GasGuard actively links environmental sensors (LPG, Flame, Smoke) with automated safety actuators (Gas Valve, Mains Power Cut, Exhaust Fan, Water Shower). When any hazard is detected, the website immediately alerts you with an audible siren and popup notification, while the hardware isolates fuel and switches mains electricity OFF.
+              {t.easyUnderstandingSubtitle}
             </span>
           </div>
         </div>
@@ -77,17 +77,6 @@ export const EasyGuideModal: React.FC<EasyGuideModalProps> = ({ isOpen, onClose 
               <p className="text-slate-600 dark:text-slate-400 mt-1 leading-relaxed font-medium">
                 {t.guideLpgDesc}
               </p>
-              <div className="mt-2.5 flex flex-wrap gap-2 text-xs font-semibold">
-                <span className="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 rounded-md">
-                  &lt;400: Clean Safe Air
-                </span>
-                <span className="px-2.5 py-1 bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-300 rounded-md">
-                  400 - 500: Fan Starts Automatically
-                </span>
-                <span className="px-2.5 py-1 bg-red-100 dark:bg-red-900/40 text-red-900 dark:text-red-300 rounded-md">
-                  &gt;500: Gas Cut Off & Power OFF (0V)
-                </span>
-              </div>
             </div>
           </div>
 
@@ -164,7 +153,7 @@ export const EasyGuideModal: React.FC<EasyGuideModalProps> = ({ isOpen, onClose 
             <div>
               <h3 className="font-bold text-slate-900 dark:text-white text-sm">{t.extinguisherName}</h3>
               <p className="text-slate-600 dark:text-slate-400 mt-1 leading-relaxed font-medium">
-                {t.extinguisherDesc}. Automatic overhead water deluge suppressing flames and heat flare-ups.
+                {t.extinguisherDesc}
               </p>
             </div>
           </div>

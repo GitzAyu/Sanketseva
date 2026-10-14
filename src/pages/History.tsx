@@ -2,9 +2,20 @@ import React, { useState, useMemo } from 'react';
 import { useDevice } from '../context/DeviceContext';
 import { History as HistoryIcon, Download, Search } from 'lucide-react';
 import { formatDateTime } from '../utils/formatting';
+import { useLanguage } from '../context/LanguageContext';
 
 export const History: React.FC = () => {
   const { events, sensorHistory } = useDevice();
+  const { t } = useLanguage();
+  const eventLabel = (type: string) => {
+    if (type.includes('GAS')) return t.filterGas;
+    if (type.includes('FLAME') || type.includes('FIRE')) return t.filterFire;
+    if (type.includes('SMOKE')) return t.filterSmoke;
+    if (type.includes('POWER')) return t.filterPower;
+    if (type.includes('VALVE')) return t.filterValve;
+    if (type.includes('FAN')) return t.filterFan;
+    return t.safetyEventsTab;
+  };
   const [activeTab, setActiveTab] = useState<'events' | 'readings'>('events');
   const [filterType, setFilterType] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,25 +33,26 @@ export const History: React.FC = () => {
       }
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
+        const severity = evt.severity === 'EMERGENCY' ? t.statusDanger : evt.severity === 'WARNING' ? t.statusWarning : t.statusNormal;
         return (
-          evt.title.toLowerCase().includes(query) ||
-          evt.description.toLowerCase().includes(query) ||
-          (evt.actionTaken && evt.actionTaken.toLowerCase().includes(query))
+          eventLabel(evt.type).toLowerCase().includes(query) ||
+          severity.toLowerCase().includes(query)
         );
       }
       return true;
     });
-  }, [events, filterType, searchQuery]);
+  }, [events, filterType, searchQuery, t]);
 
   const handleExportCSV = () => {
     let csvContent = 'data:text/csv;charset=utf-8,';
     if (activeTab === 'events') {
-      csvContent += 'Timestamp,Type,Severity,Title,Description,ActionTaken\n';
+      csvContent += `${t.timestampColumn},${t.eventColumn},${t.severityColumn},${t.details},${t.eventColumn},${t.actionColumn}\n`;
       filteredEvents.forEach((e) => {
-        csvContent += `"${new Date(e.timestamp).toISOString()}","${e.type}","${e.severity}","${e.title}","${e.description}","${e.actionTaken || ''}"\n`;
+        const severity = e.severity === 'EMERGENCY' ? t.statusDanger : e.severity === 'WARNING' ? t.statusWarning : t.statusNormal;
+        csvContent += `"${new Date(e.timestamp).toISOString()}","${eventLabel(e.type)}","${severity}","${eventLabel(e.type)}","","${t.noActionRecorded}"\n`;
       });
     } else {
-      csvContent += 'Timestamp,Gas_Raw_ADC,Smoke_PPM,Temperature_C,Humidity_RH,Flame_Detected\n';
+      csvContent += `${t.timestampColumn},${t.gasHistoryColumn},${t.smokeHistoryColumn},${t.temperatureHistoryColumn},${t.humidityHistoryColumn},${t.flameHistoryColumn}\n`;
       sensorHistory.forEach((r) => {
         csvContent += `"${new Date(r.timestamp).toISOString()}",${r.gas},${r.smoke},${r.temperature},${r.humidity},${r.flame}\n`;
       });
@@ -62,11 +74,11 @@ export const History: React.FC = () => {
           <div className="flex items-center gap-2">
             <HistoryIcon className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
             <h1 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
-              Audit Logs & Sensor History
+              {t.historyTitle}
             </h1>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Complete historical record of safety alarms, power controls, equipment actions, and sensor readings
+            {t.historySubtitle}
           </p>
         </div>
 
@@ -81,7 +93,7 @@ export const History: React.FC = () => {
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              Safety Events ({events.length})
+              {t.safetyEventsTab} ({events.length})
             </button>
             <button
               type="button"
@@ -92,7 +104,7 @@ export const History: React.FC = () => {
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              Sensor Data ({sensorHistory.length})
+              {t.sensorDataTab} ({sensorHistory.length})
             </button>
           </div>
 
@@ -102,7 +114,7 @@ export const History: React.FC = () => {
             className="px-3.5 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-            <span>Export CSV</span>
+            <span>{t.exportCsv}</span>
           </button>
         </div>
       </div>
@@ -115,7 +127,7 @@ export const History: React.FC = () => {
               <Search className="w-4 h-4 text-slate-400 shrink-0" />
               <input
                 type="text"
-                placeholder="Search event title or description..."
+                placeholder={t.searchEvents}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 focus:bg-white dark:focus:bg-slate-800"
@@ -124,7 +136,10 @@ export const History: React.FC = () => {
 
             {/* Category filters */}
             <div className="flex items-center gap-1 flex-wrap text-xs font-semibold">
-              {(['ALL', 'GAS', 'FIRE', 'SMOKE', 'POWER', 'VALVE', 'FAN'] as const).map((cat) => (
+              {([
+                ['ALL', t.filterAll], ['GAS', t.filterGas], ['FIRE', t.filterFire],
+                ['SMOKE', t.filterSmoke], ['POWER', t.filterPower], ['VALVE', t.filterValve], ['FAN', t.filterFan],
+              ] as const).map(([cat, label]) => (
                 <button
                   key={cat}
                   type="button"
@@ -135,7 +150,7 @@ export const History: React.FC = () => {
                       : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100'
                   }`}
                 >
-                  {cat}
+                  {label}
                 </button>
               ))}
             </div>
@@ -147,18 +162,17 @@ export const History: React.FC = () => {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-700">
                   <tr>
-                    <th className="py-3 px-4 font-bold">Time</th>
-                    <th className="py-3 px-4 font-bold">Severity</th>
-                    <th className="py-3 px-4 font-bold">Event Details</th>
-                    <th className="py-3 px-4 font-bold">Action Taken</th>
-                    <th className="py-3 px-4 font-bold">Status</th>
+                    <th className="py-3 px-4 font-bold">{t.timeColumn}</th>
+                    <th className="py-3 px-4 font-bold">{t.severityColumn}</th>
+                    <th className="py-3 px-4 font-bold">{t.eventColumn}</th>
+                    <th className="py-3 px-4 font-bold">{t.statusColumn}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                   {filteredEvents.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-slate-400 dark:text-slate-500">
-                        No events match the selected search criteria.
+                      <td colSpan={4} className="py-8 text-center text-slate-400 dark:text-slate-500">
+                        {t.noMatchingEvents}
                       </td>
                     </tr>
                   ) : (
@@ -177,15 +191,11 @@ export const History: React.FC = () => {
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                             }`}
                           >
-                            {evt.severity}
+                            {evt.severity === 'EMERGENCY' ? t.statusDanger : evt.severity === 'WARNING' ? t.statusWarning : t.statusNormal}
                           </span>
                         </td>
                         <td className="py-3 px-4">
-                          <p className="font-bold text-slate-900 dark:text-white">{evt.title}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{evt.description}</p>
-                        </td>
-                        <td className="py-3 px-4 text-slate-600 dark:text-slate-400 text-xs font-medium">
-                          {evt.actionTaken || 'None recorded'}
+                          <p className="font-bold text-slate-900 dark:text-white">{eventLabel(evt.type)}</p>
                         </td>
                         <td className="py-3 px-4">
                           <span
@@ -193,7 +203,7 @@ export const History: React.FC = () => {
                               evt.resolved ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'
                             }`}
                           >
-                            {evt.resolved ? 'Resolved' : 'Active'}
+                            {evt.resolved ? t.resolved : t.statusActive}
                           </span>
                         </td>
                       </tr>
@@ -211,12 +221,12 @@ export const History: React.FC = () => {
             <table className="w-full text-left text-xs font-mono">
               <thead className="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-700 font-sans">
                 <tr>
-                  <th className="py-3 px-4 font-bold">Timestamp</th>
-                  <th className="py-3 px-4 font-bold">LPG Gas (ADC)</th>
-                  <th className="py-3 px-4 font-bold">Smoke (PPM)</th>
-                  <th className="py-3 px-4 font-bold">Temperature (°C)</th>
-                  <th className="py-3 px-4 font-bold">Humidity (% RH)</th>
-                  <th className="py-3 px-4 font-bold">Flame Sensor</th>
+                  <th className="py-3 px-4 font-bold">{t.timestampColumn}</th>
+                  <th className="py-3 px-4 font-bold">{t.gasHistoryColumn}</th>
+                  <th className="py-3 px-4 font-bold">{t.smokeHistoryColumn}</th>
+                  <th className="py-3 px-4 font-bold">{t.temperatureHistoryColumn}</th>
+                  <th className="py-3 px-4 font-bold">{t.humidityHistoryColumn}</th>
+                  <th className="py-3 px-4 font-bold">{t.flameHistoryColumn}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
@@ -243,7 +253,7 @@ export const History: React.FC = () => {
                           reading.flame ? 'text-red-700 dark:text-red-400 font-bold' : 'text-emerald-700 dark:text-emerald-400 font-medium'
                         }
                       >
-                        {reading.flame ? 'DETECTED' : 'CLEAR'}
+                        {reading.flame ? t.statusDetected : t.statusClear}
                       </span>
                     </td>
                   </tr>

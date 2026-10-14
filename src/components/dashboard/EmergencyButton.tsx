@@ -69,7 +69,7 @@ export const EmergencyButton: React.FC<EmergencyButtonProps> = ({
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
               <span>
-                <strong>{t.powerCutName}:</strong> Turn Power OFF (0V Cut - trip breaker to prevent sparks)
+                <strong>{t.powerCutName}:</strong> {t.turnPowerOff}
               </span>
             </li>
             <li className="flex items-center gap-2">
@@ -87,7 +87,7 @@ export const EmergencyButton: React.FC<EmergencyButtonProps> = ({
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-rose-600 dark:bg-rose-400" />
               <span>
-                <strong>{t.buzzerName}:</strong> {t.soundAlarm} & Emergency Alert Popup Broadcast
+                <strong>{t.buzzerName}:</strong> {t.soundAlarm}
               </span>
             </li>
           </ul>

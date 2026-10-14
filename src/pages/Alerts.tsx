@@ -31,6 +31,7 @@ export const Alerts: React.FC = () => {
 
   // Switch ON means Power ON (230V); Switch OFF means Power OFF (0V Cut)
   const isPowerOn = device.actuators.powerCut?.state === 'ON';
+  const eventLabel = (type: string) => type.includes('GAS') ? t.filterGas : type.includes('FLAME') || type.includes('FIRE') ? t.filterFire : type.includes('SMOKE') ? t.filterSmoke : t.emergencyLockdownActive;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12 transition-colors duration-200">
@@ -55,11 +56,11 @@ export const Alerts: React.FC = () => {
             className="px-3.5 py-1.5 bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            <span>Open Alert Popup</span>
+            <span>{t.viewAlertPopup}</span>
           </button>
 
           <div className="text-right text-xs">
-            <span className="text-slate-400 dark:text-slate-500 block text-[11px] font-semibold">CURRENT STATUS</span>
+            <span className="text-slate-400 dark:text-slate-500 block text-[11px] font-semibold">{t.statusLabel}</span>
             <span
               className={`font-bold ${
                 systemMode === 'EMERGENCY'
@@ -69,7 +70,7 @@ export const Alerts: React.FC = () => {
                   : 'text-emerald-700 dark:text-emerald-400'
               }`}
             >
-              {systemMode === 'NORMAL' ? 'SAFE & NORMAL' : systemMode}
+              {systemMode === 'NORMAL' ? t.systemNormal : systemMode === 'WARNING' ? t.systemWarning : systemMode === 'EMERGENCY' || systemMode === 'DANGER' ? t.systemCritical : systemMode === 'OFFLINE' ? t.offline : systemMode}
             </span>
           </div>
         </div>
@@ -86,45 +87,41 @@ export const Alerts: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-sm font-bold text-red-900 dark:text-red-200">
-                    ACTIVE EMERGENCY HAZARD TRIP
+                    {t.emergencyLockdownActive}
                   </h2>
                   {isAlarmSounding && (
                     <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-extrabold animate-pulse">
-                      SIREN SOUNDING
+                      {t.audioAlarmPlaying}
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-red-800 dark:text-red-300 mt-1 leading-relaxed">
-                  {device.sensors.flame.detected
-                    ? 'Optical flame sensor tripped. Fuel supply isolated & mains power turned OFF.'
-                    : device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold
-                    ? `Dense smoke detected (${device.sensors.smoke.value} PPM). Solenoid valve cut off and ventilation active.`
-                    : `Atmospheric LPG concentration (${device.sensors.gas.value}) exceeds safety danger limit (${device.safety.gasDangerThreshold}).`}
+                  {device.sensors.flame.detected ? t.flameAlertDesc : device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold ? t.smokeAlertDesc : t.gasDangerDesc}
                 </p>
 
                 {/* Fail-Safe Actuator Status Badges */}
                 <div className="mt-3 flex items-center gap-2.5 text-xs font-semibold text-red-900/90 dark:text-red-200 flex-wrap">
                   <span className="bg-white/90 dark:bg-slate-900/90 px-2.5 py-1 rounded-lg border border-red-200 dark:border-red-900 flex items-center gap-1">
-                    <span>Valve:</span>
-                    <strong className="text-rose-600">{device.actuators.valve.state}</strong>
+                    <span>{t.valveName}:</span>
+                    <strong className="text-rose-600">{device.actuators.valve.state === 'CLOSED' ? t.statusClosed : t.statusOpen}</strong>
                   </span>
 
                   <span className="bg-white/90 dark:bg-slate-900/90 px-2.5 py-1 rounded-lg border border-red-200 dark:border-red-900 flex items-center gap-1">
                     <ZapOff className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Mains Power:</span>
+                    <span>{t.mainsPower}:</span>
                     <strong className={isPowerOn ? 'text-emerald-600' : 'text-amber-600'}>
-                      {isPowerOn ? 'ON (230V)' : 'POWER OFF (0V CUT)'}
+                      {isPowerOn ? t.powerOnShort : t.powerOffShort}
                     </strong>
                   </span>
 
                   <span className="bg-white/90 dark:bg-slate-900/90 px-2.5 py-1 rounded-lg border border-red-200 dark:border-red-900 flex items-center gap-1">
-                    <span>Fan:</span>
-                    <strong className="text-emerald-600">{device.actuators.fan.state}</strong>
+                    <span>{t.fanName}:</span>
+                    <strong className="text-emerald-600">{device.actuators.fan.state === 'ON' ? t.statusActive : t.statusInactive}</strong>
                   </span>
 
                   <span className="bg-white/90 dark:bg-slate-900/90 px-2.5 py-1 rounded-lg border border-red-200 dark:border-red-900 flex items-center gap-1">
-                    <span>Alarm:</span>
-                    <strong className="text-rose-600">{device.actuators.buzzer.state}</strong>
+                    <span>{t.buzzerName}:</span>
+                    <strong className="text-rose-600">{device.actuators.buzzer.state === 'ON' ? t.statusActive : t.statusInactive}</strong>
                   </span>
                 </div>
               </div>
@@ -138,7 +135,7 @@ export const Alerts: React.FC = () => {
                 className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
-                <span>View Popup</span>
+                <span>{t.viewAlertPopup}</span>
               </button>
 
               {isAlarmSounding && (
@@ -148,7 +145,7 @@ export const Alerts: React.FC = () => {
                   className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   <Volume2 className="w-3.5 h-3.5" />
-                  <span>Silence Sound</span>
+                  <span>{t.silenceAlarmAction}</span>
                 </button>
               )}
 
@@ -169,8 +166,7 @@ export const Alerts: React.FC = () => {
         <div className="p-4 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-center gap-3 shadow-xs">
           <ShieldCheck className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0" />
           <div className="text-xs text-emerald-950 dark:text-emerald-200 font-medium">
-            <span className="font-bold text-emerald-800 dark:text-emerald-300">No active hazard alerts.</span> All
-            sensor channels (LPG Gas, Flame, Smoke, Temperature) are nominal and mains power is active.
+            {t.noEvents}
           </div>
         </div>
       )}
@@ -179,16 +175,16 @@ export const Alerts: React.FC = () => {
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
         <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-850">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-            Recorded Incident History
+            {t.recentEvents}
           </h2>
           <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
-            {emergencyAndWarningEvents.length} recorded incidents
+            {emergencyAndWarningEvents.length}
           </span>
         </div>
 
         {emergencyAndWarningEvents.length === 0 ? (
           <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500">
-            No warning or emergency incidents logged. Kitchen air has been nominal.
+            {t.noEvents}
           </div>
         ) : (
           <div className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -203,9 +199,9 @@ export const Alerts: React.FC = () => {
                           : 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-900'
                       }`}
                     >
-                      {alert.severity}
+                      {alert.severity === 'EMERGENCY' ? t.statusDanger : t.statusWarning}
                     </span>
-                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">{alert.title}</h3>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">{eventLabel(alert.type)}</h3>
                   </div>
                   <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs">
                     <Clock className="w-3.5 h-3.5" />
@@ -213,27 +209,15 @@ export const Alerts: React.FC = () => {
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-                  {alert.description}
-                </p>
-
                 <div className="pt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-                  {alert.actionTaken ? (
-                    <div className="text-slate-500 dark:text-slate-400">
-                      <span>Action Taken: </span>
-                      <span className="text-emerald-800 dark:text-emerald-400 font-semibold">{alert.actionTaken}</span>
-                    </div>
-                  ) : (
-                    <div />
-                  )}
                   <div className="flex items-center gap-1">
-                    <span className="text-slate-400 dark:text-slate-500">State:</span>
+                    <span className="text-slate-400 dark:text-slate-500">{t.statusLabel}:</span>
                     <span
                       className={`font-semibold ${
                         alert.resolved ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'
                       }`}
                     >
-                      {alert.resolved ? 'Resolved' : 'Active'}
+                      {alert.resolved ? t.resolved : t.statusActive}
                     </span>
                   </div>
                 </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import {
   Flame,
   Wind,
@@ -17,6 +18,7 @@ interface SensorCardProps {
   subtitle?: string;
   simpleExplanation?: string;
   progressPercent?: number; // 0 to 100 for gauge
+  isLive?: boolean;
 }
 
 export const SensorCard: React.FC<SensorCardProps> = ({
@@ -29,7 +31,9 @@ export const SensorCard: React.FC<SensorCardProps> = ({
   subtitle,
   simpleExplanation,
   progressPercent,
+  isLive = true,
 }) => {
+  const { t } = useLanguage();
   const getIcon = () => {
     switch (type) {
       case 'gas':
@@ -46,6 +50,7 @@ export const SensorCard: React.FC<SensorCardProps> = ({
   };
 
   const getStatusDot = () => {
+    if (!isLive) return 'bg-slate-400';
     switch (statusVariant) {
       case 'SAFE':
       case 'NORMAL':
@@ -109,15 +114,15 @@ export const SensorCard: React.FC<SensorCardProps> = ({
         {/* Metric Display */}
         <div className="flex items-baseline gap-1.5">
           <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white tabular-nums">
-            {value}
+            {isLive ? value : '—'}
           </span>
-          {unit && (
+          {isLive && unit && (
             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{unit}</span>
           )}
         </div>
 
         {/* Level Gauge */}
-        {progressPercent !== undefined && (
+        {isLive && progressPercent !== undefined && (
           <div className="mt-2.5">
             <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden flex">
               <div
@@ -129,12 +134,13 @@ export const SensorCard: React.FC<SensorCardProps> = ({
         )}
 
         {/* Explanation */}
-        {simpleExplanation && (
+        {isLive && simpleExplanation && (
           <p className="mt-2 text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
             {simpleExplanation}
           </p>
         )}
-        {subtitle && !simpleExplanation && (
+        {!isLive && <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{t.waitingForSensors}</p>}
+        {isLive && subtitle && !simpleExplanation && (
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {subtitle}
           </p>
@@ -143,10 +149,10 @@ export const SensorCard: React.FC<SensorCardProps> = ({
 
       {/* Bottom Status Row */}
       <div className="mt-3.5 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
-        <span className="text-[11px] text-slate-400 dark:text-slate-500">Status</span>
+        <span className="text-[11px] text-slate-400 dark:text-slate-500">{t.statusLabel}</span>
         <div className="flex items-center gap-1.5">
           <span className={`w-1.5 h-1.5 rounded-full ${getStatusDot()}`} />
-          <span className={styles.textColor}>{statusText}</span>
+          <span className={isLive ? styles.textColor : 'text-slate-500 dark:text-slate-400'}>{isLive ? statusText : t.waitingForSensors}</span>
         </div>
       </div>
     </div>

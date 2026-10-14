@@ -144,10 +144,11 @@ export async function updateActuatorsInFirebase(
 
   for (const [key, value] of Object.entries(actuators)) {
     if (!['valve', 'fan', 'buzzer', 'extinguisher', 'powerCut'].includes(key)) continue;
-    writes[`devices/${RTDB_DEVICE_ID}/actuators/${key}`] = {
-      state: value,
-      lastChanged: timestamp,
-    };
+    // Preserve the original device schema: actuator values are stored as
+    // strings at devices/{id}/actuators/{name}. The controller reads these
+    // values directly, so wrapping them in a { state, lastChanged } object
+    // can make it ignore a command and restore its previous output.
+    writes[`devices/${RTDB_DEVICE_ID}/actuators/${key}`] = value;
     writes[`devices/${RTDB_DEVICE_ID}/commands/${key}`] = {
       command: value,
       commandId,
@@ -155,6 +156,8 @@ export async function updateActuatorsInFirebase(
       timestamp,
     };
   }
+  writes[`devices/${RTDB_DEVICE_ID}/actuators/updatedAt`] = timestamp;
+  writes[`devices/${RTDB_DEVICE_ID}/actuators/lastChangedBy`] = changedBy;
 
   try {
     // Use the existing ESP32 schema and one RTDB multi-location write. This

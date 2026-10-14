@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { HistoricalReading } from '../../types/sensors';
 import { formatTimestamp } from '../../utils/formatting';
 import { Wind, CloudFog, Info } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface GasChartProps {
   data: HistoricalReading[];
@@ -14,6 +15,7 @@ export const GasChart: React.FC<GasChartProps> = ({
   warningThreshold,
   dangerThreshold,
 }) => {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<'1H' | '6H' | '24H'>('1H');
   const [activeChannel, setActiveChannel] = useState<'both' | 'gas' | 'smoke'>('both');
 
@@ -69,21 +71,21 @@ export const GasChart: React.FC<GasChartProps> = ({
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white">
-              LPG Gas & Smoke Concentration Trend
+              {t.gasPpmTrend} & {t.smokeTrend}
             </h3>
             <span className="text-xs text-rose-700 dark:text-rose-400 font-bold bg-rose-50 dark:bg-rose-950/40 px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900/50 flex items-center gap-1">
               <Wind className="w-3 h-3" />
-              <span>MQ-6 Gas</span>
+              <span>{t.sensorGas}</span>
             </span>
             <span className="text-xs text-amber-700 dark:text-amber-400 font-bold bg-amber-50 dark:bg-amber-950/40 px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-900/50 flex items-center gap-1">
               <CloudFog className="w-3 h-3" />
-              <span>Smoke PPM</span>
+              <span>{t.sensorSmoke}</span>
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
             <Info className="w-3.5 h-3.5 text-rose-500 shrink-0" />
             <span>
-              Real-time atmospheric curve. Continuous monitoring triggers automated alarms, alert popup and power cut.
+              {t.trendDescription}
             </span>
           </p>
         </div>
@@ -100,7 +102,7 @@ export const GasChart: React.FC<GasChartProps> = ({
                   : 'text-slate-500 dark:text-slate-400'
               }`}
             >
-              Both
+              {t.both}
             </button>
             <button
               type="button"
@@ -111,7 +113,7 @@ export const GasChart: React.FC<GasChartProps> = ({
                   : 'text-slate-500 dark:text-slate-400'
               }`}
             >
-              Gas Only
+              {t.gasOnly}
             </button>
             <button
               type="button"
@@ -122,7 +124,7 @@ export const GasChart: React.FC<GasChartProps> = ({
                   : 'text-slate-500 dark:text-slate-400'
               }`}
             >
-              Smoke Only
+              {t.smokeOnly}
             </button>
           </div>
 
@@ -195,7 +197,7 @@ export const GasChart: React.FC<GasChartProps> = ({
             fontWeight="bold"
             textAnchor="end"
           >
-            Warn ({warningThreshold})
+            {t.warn} ({warningThreshold})
           </text>
 
           {/* Danger Threshold Reference Line */}
@@ -216,7 +218,7 @@ export const GasChart: React.FC<GasChartProps> = ({
             fontWeight="bold"
             textAnchor="end"
           >
-            Danger ({dangerThreshold})
+            {t.statusDanger} ({dangerThreshold})
           </text>
 
           {/* Y Axis Labels */}
@@ -276,15 +278,15 @@ export const GasChart: React.FC<GasChartProps> = ({
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-1 bg-rose-600 rounded-full" />
-            <span className="font-semibold text-slate-700 dark:text-slate-300">LPG Gas (MQ-6)</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-300">{t.sensorGas}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-1 bg-amber-500 rounded-full" />
-            <span className="font-semibold text-slate-700 dark:text-slate-300">Smoke (MQ-2)</span>
+            <span className="font-semibold text-slate-700 dark:text-slate-300">{t.sensorSmoke}</span>
           </div>
         </div>
         <span className="text-[11px] font-mono">
-          Last: Gas {filteredData[filteredData.length - 1]?.gas ?? 0} ADC | Smoke {filteredData[filteredData.length - 1]?.smoke ?? 0} PPM
+          {t.last}: {t.sensorGas} {filteredData[filteredData.length - 1]?.gas ?? 0} | {t.sensorSmoke} {filteredData[filteredData.length - 1]?.smoke ?? 0}
         </span>
       </div>
     </div>

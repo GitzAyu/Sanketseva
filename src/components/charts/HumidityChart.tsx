@@ -1,12 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { HistoricalReading } from '../../types/sensors';
 import { Droplets } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface HumidityChartProps {
   data: HistoricalReading[];
 }
 
 export const HumidityChart: React.FC<HumidityChartProps> = ({ data }) => {
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<'1H' | '6H' | '24H'>('1H');
 
   const filteredData = useMemo(() => {
@@ -46,7 +48,7 @@ export const HumidityChart: React.FC<HumidityChartProps> = ({ data }) => {
         <div className="flex items-center gap-2">
           <Droplets className="w-4 h-4 text-sky-500" />
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-            Relative Air Humidity History
+            {t.humidityTrend}
           </h3>
         </div>
         <div className="flex items-center gap-1 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs font-semibold">
@@ -83,9 +85,9 @@ export const HumidityChart: React.FC<HumidityChartProps> = ({ data }) => {
         )}
       </svg>
       <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1 border-t border-slate-100 dark:border-slate-800">
-        <span>Min: {minHum}%</span>
-        <span>Latest: {filteredData[filteredData.length - 1]?.humidity ?? 0}% RH</span>
-        <span>Max: {maxHum}%</span>
+        <span>{t.minimum}: {minHum}%</span>
+        <span>{t.latest}: {filteredData[filteredData.length - 1]?.humidity ?? 0}%</span>
+        <span>{t.maximum}: {maxHum}%</span>
       </div>
     </div>
   );
