@@ -19,19 +19,18 @@ import type { SafetyData } from '../types/device';
 // These are Firebase's public web-app settings. Access is controlled by Firebase
 // Authentication and database security rules, never by keeping this API key secret.
 export const firebaseConfig = {
-  apiKey: 'AIzaSyC46juSVpwoSaNgf_LOwt_zlUxfT2pmdFk',
-  authDomain: 'gasgaurd-e6009.firebaseapp.com',
-  projectId: 'gasgaurd-e6009',
-  storageBucket: 'gasgaurd-e6009.firebasestorage.app',
-  messagingSenderId: '44500050866',
-  appId: '1:44500050866:web:43197f2ee402e288347aab',
-  measurementId: 'G-QHMV7GKKDH',
-  // Firebase's default Realtime Database URL for this project.
-  databaseURL: 'https://gasgaurd-e6009-default-rtdb.firebaseio.com',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyC46juSVpwoSaNgf_LOwt_zlUxfT2pmdFk',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'gasgaurd-e6009.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'gasgaurd-e6009',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'gasgaurd-e6009.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '44500050866',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:44500050866:web:43197f2ee402e288347aab',
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-QHMV7GKKDH',
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || 'https://gasgaurd-e6009-default-rtdb.firebaseio.com',
 };
 
 export const RTDB_BASE_URL = firebaseConfig.databaseURL;
-export const RTDB_DEVICE_ID = 'gasguard-001';
+export const RTDB_DEVICE_ID = import.meta.env.VITE_DEVICE_ID || 'gasguard-001';
 export const userFirebaseConfig = firebaseConfig;
 export const app = getApps().find((candidate) => candidate.name === '[DEFAULT]')
   ?? initializeApp(firebaseConfig);

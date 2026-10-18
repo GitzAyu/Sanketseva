@@ -6,7 +6,7 @@
  *   devices/gasguard-001/actuators/{valve,powerCut,fan,buzzer,extinguisher}
  *
  * IMPORTANT:
- * - Fill in Wi-Fi and a dedicated Firebase Email/Password device account below.
+ * - Copy firmware/secrets.example.h to firmware/secrets.h and fill in Wi-Fi and a dedicated Firebase Email/Password device account.
  * - Confirm every GPIO and relay polarity against your actual board/module.
  * - MQ analog output must never exceed the ESP32 ADC input limit (3.3 V).
  * - Do not connect ESP32 pins directly to mains voltage, a gas valve, or a pump.
@@ -27,14 +27,11 @@
 // -----------------------------------------------------------------------------
 // 1) Credentials and database
 // -----------------------------------------------------------------------------
-static const char WIFI_SSID[] = "Ayu";
-static const char WIFI_PASSWORD[] = "123456780";
+#include "secrets.h"
 
 // Use a dedicated Firebase Authentication user for the device.
 // Do not put an account owner's password or a service-account private key here.
 static const char FIREBASE_API_KEY[] = "AIzaSyC46juSVpwoSaNgf_LOwt_zlUxfT2pmdFk";
-static const char FIREBASE_DEVICE_EMAIL[] = "ayu@gmail.com";
-static const char FIREBASE_DEVICE_PASSWORD[] = "123456";
 static const char FIREBASE_DATABASE_URL[] =
   "https://gasgaurd-e6009-default-rtdb.firebaseio.com";
 static const char DEVICE_ID[] = "gasguard-001";

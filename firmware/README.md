@@ -10,7 +10,7 @@
    - `ArduinoJson` version 7
    - `DHT sensor library` by Adafruit
    - `Adafruit Unified Sensor`
-3. In Firebase Authentication, create a dedicated Email/Password account for the ESP32. The Realtime Database rules in this project require an authenticated user. Put that account's credentials, your Wi-Fi name/password, and the Firebase Web API key in the credential section of the sketch.
+3. In Firebase Authentication, create a dedicated Email/Password account for the ESP32. The Realtime Database rules in this project require an authenticated user. Copy `secrets.example.h` to `secrets.h` in the firmware folder and enter the Wi-Fi and dedicated device-account credentials. `secrets.h` is ignored by Git. The Firebase Web API key is configured in the sketch.
 4. Check the GPIO assignments and relay polarity at the top of the sketch against your actual wiring.
 5. Upload and open Serial Monitor at `115200` baud.
 

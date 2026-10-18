@@ -1,0 +1,31 @@
+{
+  "devices": {
+    "gasguard-001": {
+      "sensors": {
+        "gas": {
+          "value": 335,
+          "timestamp": 1792300000000
+        },
+        "smoke": {
+          "value": 142,
+          "detected": false,
+          "timestamp": 1792300000000
+        },
+        "temperature": {
+          "value": 28.4,
+          "unit": "C",
+          "timestamp": 1792300000000
+        },
+        "humidity": {
+          "value": 57.8,
+          "unit": "%",
+          "timestamp": 1792300000000
+        },
+        "flame": {
+          "detected": false,
+          "timestamp": 1792300000000
+        }
+      }
+    }
+  }
+}
