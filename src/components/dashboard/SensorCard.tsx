@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import type { SensorReadingSource } from '../../context/DeviceContext';
 import {
   Flame,
   Wind,
@@ -19,6 +20,7 @@ interface SensorCardProps {
   simpleExplanation?: string;
   progressPercent?: number; // 0 to 100 for gauge
   isLive?: boolean;
+  readingSource?: SensorReadingSource;
 }
 
 export const SensorCard: React.FC<SensorCardProps> = ({
@@ -32,6 +34,7 @@ export const SensorCard: React.FC<SensorCardProps> = ({
   simpleExplanation,
   progressPercent,
   isLive = true,
+  readingSource = 'live',
 }) => {
   const { t } = useLanguage();
   const getIcon = () => {
@@ -50,7 +53,7 @@ export const SensorCard: React.FC<SensorCardProps> = ({
   };
 
   const getStatusDot = () => {
-    if (!isLive) return 'bg-slate-400';
+    if (!isLive || readingSource !== 'live') return 'bg-slate-400';
     switch (statusVariant) {
       case 'SAFE':
       case 'NORMAL':
@@ -152,7 +155,9 @@ export const SensorCard: React.FC<SensorCardProps> = ({
         <span className="text-[11px] text-slate-400 dark:text-slate-500">{t.statusLabel}</span>
         <div className="flex items-center gap-1.5">
           <span className={`w-1.5 h-1.5 rounded-full ${getStatusDot()}`} />
-          <span className={isLive ? styles.textColor : 'text-slate-500 dark:text-slate-400'}>{isLive ? statusText : t.waitingForSensors}</span>
+          <span className={readingSource === 'live' ? styles.textColor : 'text-slate-500 dark:text-slate-400'}>
+            {readingSource === 'live' ? statusText : readingSource === 'demo' ? t.demoReading : t.lastKnownReading}
+          </span>
         </div>
       </div>
     </div>

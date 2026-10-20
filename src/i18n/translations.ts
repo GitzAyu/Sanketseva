@@ -7,6 +7,8 @@ export interface TranslationDictionary {
   online: string;
   offline: string;
   waitingForSensors: string;
+  demoReading: string;
+  lastKnownReading: string;
   valveNeedsLiveReadings: string;
   lastUpdate: string;
   lastSeen: string;
@@ -385,6 +387,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     online: 'ONLINE',
     offline: 'OFFLINE',
     waitingForSensors: 'Waiting for live sensor data',
+    demoReading: 'Demo reading',
+    lastKnownReading: 'Last reading',
     valveNeedsLiveReadings: 'Valve opening is unavailable until the device sends live sensor readings.',
     lastUpdate: 'Last update',
     lastSeen: 'Last seen',
@@ -742,6 +746,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     online: 'ऑनलाइन',
     offline: 'ऑफ़लाइन',
     waitingForSensors: 'लाइव सेंसर डेटा का इंतज़ार',
+    demoReading: 'डेमो रीडिंग',
+    lastKnownReading: 'पिछली रीडिंग',
     valveNeedsLiveReadings: 'डिवाइस से लाइव सेंसर रीडिंग मिलने तक गैस वाल्व नहीं खुल सकता।',
     lastUpdate: 'अंतिम अपडेट',
     lastSeen: 'अंतिम देखा गया',
@@ -1098,6 +1104,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     online: 'ऑनलाइन',
     offline: 'ऑफ़लाइन',
     waitingForSensors: 'लाइव सेंसर डेटा के इंतजार में',
+    demoReading: 'डेमो रीडिंग',
+    lastKnownReading: 'पिछली रीडिंग',
     valveNeedsLiveReadings: 'डिवाइस से लाइव सेंसर रीडिंग मिले के बादे गैस वाल्व खुली।',
     lastUpdate: 'पिछिला अपडेट',
     lastSeen: 'अंतिम बेर देखल',

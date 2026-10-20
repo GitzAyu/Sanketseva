@@ -29,23 +29,23 @@ export const INITIAL_DEVICE_STATE: DeviceState = {
   },
   sensors: {
     gas: {
-      value: 0,
+      value: 120,
       status: 'NORMAL',
       timestamp: 0,
     },
     smoke: {
-      value: 0,
+      value: 25,
       detected: false,
       status: 'NORMAL',
       timestamp: 0,
     },
     temperature: {
-      value: 0,
+      value: 24,
       unit: '°C',
       timestamp: 0,
     },
     humidity: {
-      value: 0,
+      value: 45,
       unit: '%',
       timestamp: 0,
     },
@@ -91,6 +91,9 @@ export const INITIAL_DEVICE_STATE: DeviceState = {
   },
 };
 
+export type SensorReadingSource = 'live' | 'last-known' | 'demo';
+export type SensorReadingSources = Record<'gas' | 'smoke' | 'temperature' | 'humidity' | 'flame', SensorReadingSource>;
+
 export interface CommandDispatchResult {
   success: boolean;
   commandId: string;
@@ -105,6 +108,7 @@ export interface DeviceContextType {
   sensorHistory: HistoricalReading[];
   hasLiveTelemetry: boolean;
   hasRequiredSafetyTelemetry: boolean;
+  sensorReadingSources: SensorReadingSources;
   events: GasGuardEvent[];
 
   // Firebase integration status
@@ -159,6 +163,9 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
 }) => {
   const [device, setDevice] = useState<DeviceState>(INITIAL_DEVICE_STATE);
   const [sensorHistory, setSensorHistory] = useState<HistoricalReading[]>([]);
+  const [sensorReadingSources, setSensorReadingSources] = useState<SensorReadingSources>({
+    gas: 'demo', smoke: 'demo', temperature: 'demo', humidity: 'demo', flame: 'demo',
+  });
 
   const [events, setEvents] = useState<GasGuardEvent[]>([]);
 
@@ -183,6 +190,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
   const hazardActiveRef = useRef<boolean>(false);
   const hasRequiredSafetyTelemetryRef = useRef<boolean>(false);
   const sensorTimestampsRef = useRef({ gas: 0, smoke: 0, temperature: 0, humidity: 0, flame: 0 });
+  const sensorEverReceivedRef = useRef({ gas: false, smoke: false, temperature: false, humidity: false, flame: false });
 
   // Firebase integration state
   const [isFirebaseConnected, setIsFirebaseConnected] = useState<boolean>(false);
@@ -244,6 +252,18 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
           humidity: telemetry.available.humidity ? telemetry.humidityTimestamp || timestamp : 0,
           flame: telemetry.available.flame ? telemetry.flameTimestamp || timestamp : 0,
         };
+        for (const key of Object.keys(telemetry.available) as Array<keyof typeof sensorEverReceivedRef.current>) {
+          if (telemetry.available[key]) sensorEverReceivedRef.current[key] = true;
+        }
+        const isFreshReading = (available: boolean, sensorTimestamp?: number) =>
+          available && now - (sensorTimestamp || timestamp) < 60000;
+        setSensorReadingSources({
+          gas: isFreshReading(telemetry.available.gas, telemetry.gasTimestamp) ? 'live' : sensorEverReceivedRef.current.gas ? 'last-known' : 'demo',
+          smoke: isFreshReading(telemetry.available.smoke, telemetry.smokeTimestamp) ? 'live' : sensorEverReceivedRef.current.smoke ? 'last-known' : 'demo',
+          temperature: isFreshReading(telemetry.available.temperature, telemetry.temperatureTimestamp) ? 'live' : sensorEverReceivedRef.current.temperature ? 'last-known' : 'demo',
+          humidity: isFreshReading(telemetry.available.humidity, telemetry.humidityTimestamp) ? 'live' : sensorEverReceivedRef.current.humidity ? 'last-known' : 'demo',
+          flame: isFreshReading(telemetry.available.flame, telemetry.flameTimestamp) ? 'live' : sensorEverReceivedRef.current.flame ? 'last-known' : 'demo',
+        });
         const safetyTimestamps = [
           telemetry.gasTimestamp,
           telemetry.smokeTimestamp,
@@ -628,6 +648,13 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
       };
       const hasAnyLiveSensor = Object.values(availability).some(Boolean);
       const hasFreshSafetySensors = availability.gas && availability.smoke && availability.temperature && availability.flame;
+      setSensorReadingSources({
+        gas: availability.gas ? 'live' : sensorEverReceivedRef.current.gas ? 'last-known' : 'demo',
+        smoke: availability.smoke ? 'live' : sensorEverReceivedRef.current.smoke ? 'last-known' : 'demo',
+        temperature: availability.temperature ? 'live' : sensorEverReceivedRef.current.temperature ? 'last-known' : 'demo',
+        humidity: availability.humidity ? 'live' : sensorEverReceivedRef.current.humidity ? 'last-known' : 'demo',
+        flame: availability.flame ? 'live' : sensorEverReceivedRef.current.flame ? 'last-known' : 'demo',
+      });
       hasRequiredSafetyTelemetryRef.current = hasFreshSafetySensors;
       setHasLiveTelemetry(hasAnyLiveSensor);
       setHasRequiredSafetyTelemetry(hasFreshSafetySensors);
@@ -1076,6 +1103,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
         sensorHistory,
         hasLiveTelemetry,
         hasRequiredSafetyTelemetry,
+        sensorReadingSources,
         events,
         isFirebaseConnected,
         firebaseProjectId: firebaseConfig.projectId,

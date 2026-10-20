@@ -28,6 +28,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const {
     device,
     hasRequiredSafetyTelemetry,
+    sensorReadingSources,
     systemMode,
     sensorHistory,
     events,
@@ -204,7 +205,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* LPG Sensor */}
           <SensorCard
             type="gas"
-            isLive={device.sensors.gas.timestamp > 0}
+            isLive
+            readingSource={sensorReadingSources.gas}
             title={t.sensorGas}
             value={device.sensors.gas.value}
             unit="ADC"
@@ -229,7 +231,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Smoke Sensor */}
           <SensorCard
             type="smoke"
-            isLive={device.sensors.smoke.timestamp > 0}
+            isLive
+            readingSource={sensorReadingSources.smoke}
             title={t.sensorSmoke}
             value={device.sensors.smoke.value}
             unit="PPM"
@@ -254,7 +257,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Fire Sensor */}
           <SensorCard
             type="flame"
-            isLive={device.sensors.flame.timestamp > 0}
+            isLive
+            readingSource={sensorReadingSources.flame}
             title={t.sensorFlame}
             value={device.sensors.flame.detected ? t.flameDetected : t.flameClear}
             statusText={device.sensors.flame.detected ? t.flameDetected : t.flameClear}
@@ -265,7 +269,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Room Temperature */}
           <SensorCard
             type="temperature"
-            isLive={device.sensors.temperature.timestamp > 0}
+            isLive
+            readingSource={sensorReadingSources.temperature}
             title={t.sensorTemp}
             value={device.sensors.temperature.value}
             unit="°C"
@@ -290,7 +295,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           {/* Air Humidity */}
           <SensorCard
             type="humidity"
-            isLive={device.sensors.humidity.timestamp > 0}
+            isLive
+            readingSource={sensorReadingSources.humidity}
             title={t.sensorHumidity}
             value={device.sensors.humidity.value}
             unit="%"

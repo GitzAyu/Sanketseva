@@ -7,7 +7,7 @@ import { TemperatureChart } from '../components/charts/TemperatureChart';
 import { HumidityChart } from '../components/charts/HumidityChart';
 
 export const Monitoring: React.FC = () => {
-  const { device, sensorHistory, isOnline } = useDevice();
+  const { device, sensorHistory, isOnline, sensorReadingSources } = useDevice();
   const { t } = useLanguage();
   const isPowerOn = device.actuators.powerCut.state === 'ON';
 
@@ -15,10 +15,10 @@ export const Monitoring: React.FC = () => {
     {
       name: t.sensorGas,
       purpose: t.gasSafeDesc,
-      isLive: device.sensors.gas.timestamp > 0,
-      value: device.sensors.gas.timestamp > 0 ? `${device.sensors.gas.value} ADC` : t.waitingForSensors,
+      isLive: sensorReadingSources.gas === 'live',
+      value: `${device.sensors.gas.value} ADC`,
       limit: `${t.statusWarning}: ${device.safety.gasWarningThreshold} · ${t.statusDanger}: ${device.safety.gasDangerThreshold}`,
-      status: device.sensors.gas.timestamp <= 0 ? t.waitingForSensors : device.sensors.gas.value >= device.safety.gasDangerThreshold
+      status: sensorReadingSources.gas === 'demo' ? t.demoReading : sensorReadingSources.gas === 'last-known' ? t.lastKnownReading : device.sensors.gas.value >= device.safety.gasDangerThreshold
         ? t.statusDanger
         : device.sensors.gas.value >= device.safety.gasWarningThreshold ? t.statusWarning : t.statusSafe,
       danger: device.sensors.gas.value >= device.safety.gasDangerThreshold,
@@ -27,10 +27,10 @@ export const Monitoring: React.FC = () => {
     {
       name: t.sensorSmoke,
       purpose: t.smokeSafeDesc,
-      isLive: device.sensors.smoke.timestamp > 0,
-      value: device.sensors.smoke.timestamp > 0 ? `${device.sensors.smoke.value} PPM` : t.waitingForSensors,
+      isLive: sensorReadingSources.smoke === 'live',
+      value: `${device.sensors.smoke.value} PPM`,
       limit: `${t.statusDanger}: ${device.safety.smokeDangerThreshold} PPM`,
-      status: device.sensors.smoke.timestamp <= 0 ? t.waitingForSensors : device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold
+      status: sensorReadingSources.smoke === 'demo' ? t.demoReading : sensorReadingSources.smoke === 'last-known' ? t.lastKnownReading : device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold
         ? t.statusDanger
         : device.sensors.smoke.value >= 200 ? t.statusWarning : t.statusSafe,
       danger: device.sensors.smoke.detected || device.sensors.smoke.value >= device.safety.smokeDangerThreshold,
@@ -39,20 +39,20 @@ export const Monitoring: React.FC = () => {
     {
       name: t.sensorFlame,
       purpose: t.flameSafeDesc,
-      isLive: device.sensors.flame.timestamp > 0,
-      value: device.sensors.flame.timestamp > 0 ? (device.sensors.flame.detected ? t.statusDetected : t.statusClear) : t.waitingForSensors,
+      isLive: sensorReadingSources.flame === 'live',
+      value: device.sensors.flame.detected ? t.statusDetected : t.statusClear,
       limit: t.statusClear,
-      status: device.sensors.flame.timestamp <= 0 ? t.waitingForSensors : device.sensors.flame.detected ? t.statusDanger : t.statusSafe,
+      status: sensorReadingSources.flame === 'demo' ? t.demoReading : sensorReadingSources.flame === 'last-known' ? t.lastKnownReading : device.sensors.flame.detected ? t.statusDanger : t.statusSafe,
       danger: device.sensors.flame.detected,
       warning: false,
     },
     {
       name: t.sensorTemp,
       purpose: t.tempNormalDesc,
-      isLive: device.sensors.temperature.timestamp > 0,
-      value: device.sensors.temperature.timestamp > 0 ? `${device.sensors.temperature.value} °C` : t.waitingForSensors,
+      isLive: sensorReadingSources.temperature === 'live',
+      value: device.sensors.temperature.value + ' °C',
       limit: `${t.statusWarning}: ${device.safety.temperatureWarningThreshold} °C · ${t.statusDanger}: ${device.safety.temperatureDangerThreshold} °C`,
-      status: device.sensors.temperature.timestamp <= 0 ? t.waitingForSensors : device.sensors.temperature.value >= device.safety.temperatureDangerThreshold
+      status: sensorReadingSources.temperature === 'demo' ? t.demoReading : sensorReadingSources.temperature === 'last-known' ? t.lastKnownReading : device.sensors.temperature.value >= device.safety.temperatureDangerThreshold
         ? t.statusDanger
         : device.sensors.temperature.value >= device.safety.temperatureWarningThreshold ? t.statusWarning : t.statusSafe,
       danger: device.sensors.temperature.value >= device.safety.temperatureDangerThreshold,
@@ -61,10 +61,10 @@ export const Monitoring: React.FC = () => {
     {
       name: t.sensorHumidity,
       purpose: t.sensorHumidityDesc,
-      isLive: device.sensors.humidity.timestamp > 0,
-      value: device.sensors.humidity.timestamp > 0 ? `${device.sensors.humidity.value}%` : t.waitingForSensors,
+      isLive: sensorReadingSources.humidity === 'live',
+      value: device.sensors.humidity.value + '%',
       limit: '20–90%',
-      status: device.sensors.humidity.timestamp > 0 ? t.statusComfortable : t.waitingForSensors,
+      status: sensorReadingSources.humidity === 'demo' ? t.demoReading : sensorReadingSources.humidity === 'last-known' ? t.lastKnownReading : t.statusComfortable,
       danger: false,
       warning: false,
     },
