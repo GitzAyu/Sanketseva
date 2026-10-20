@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useDevice } from '../../context/DeviceContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { BrandWordmark } from '../common/BrandWordmark';
 
 interface SidebarProps {
   currentRoute: string;
@@ -79,7 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div>
                 <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">
-                  {t.brandName}
+                  <BrandWordmark />
                 </span>
                 <p className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase tracking-wider font-bold">
                   IoT Safety System

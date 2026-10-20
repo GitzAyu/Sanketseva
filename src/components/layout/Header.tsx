@@ -18,6 +18,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { LanguageSelector } from '../common/LanguageSelector';
 import { ThemeToggleButton } from '../common/ThemeToggleButton';
 import { EasyGuideModal } from '../dashboard/EasyGuideModal';
+import { BrandWordmark } from '../common/BrandWordmark';
 
 interface HeaderProps {
   userEmail?: string | null;
@@ -117,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
               <ShieldCheck className="w-4 h-4" />
             </div>
             <span className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white">
-              {t.brandName}
+              <BrandWordmark />
             </span>
           </div>
 

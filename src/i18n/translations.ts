@@ -380,7 +380,7 @@ export interface TranslationDictionary {
 
 export const translations: Record<Language, TranslationDictionary> = {
   en: {
-    brandName: 'SanketSeva',
+    brandName: 'Sanketseva',
     brandSubtitle: 'IoT LPG Gas, Fire & Smoke Safety System',
     online: 'ONLINE',
     offline: 'OFFLINE',
@@ -737,7 +737,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     backToConsole: 'Back', lastUpdated: 'Last updated', privacyTitle: 'Privacy', termsTitle: 'Terms', sound: 'Sound', selectAlertSound: 'Choose alert sound', both: 'Both', gasOnly: 'Gas only', smokeOnly: 'Smoke only', trendDescription: 'Live sensor readings over time.', warn: 'Warning', last: 'Latest', statusLabel: 'Status', showPassword: 'Show password', hidePassword: 'Hide password', legalIntro: 'Information about how this safety system works and handles operational readings.', privacyData: 'The system uses sensor readings, equipment states, and account details to show safety status and record events.', termsSafety: 'This website helps you monitor readings and control connected equipment.', termsResponsibility: 'Always follow local emergency guidance. Do not rely on this website as your only safety measure.', working: 'Working…', commandSaved: 'Change saved.', commandFailed: 'Could not save the change. Check the connection and try again.', minimum: 'Min', maximum: 'Max', latest: 'Latest', authFailed: 'Sign-in failed. Check your details and try again.', menuLabel: 'Open menu', lightMode: 'Light mode', darkMode: 'Dark mode',
   },
   hi: {
-    brandName: 'SanketSeva',
+    brandName: 'Sanketseva',
     brandSubtitle: 'IoT LPG गैस, आग और धुआं सुरक्षा प्रणाली',
     online: 'ऑनलाइन',
     offline: 'ऑफ़लाइन',
@@ -1093,7 +1093,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     backToConsole: 'वापस जाएँ', lastUpdated: 'अंतिम अपडेट', privacyTitle: 'गोपनीयता', termsTitle: 'नियम', sound: 'आवाज़', selectAlertSound: 'अलर्ट की आवाज़ चुनें', both: 'दोनों', gasOnly: 'केवल गैस', smokeOnly: 'केवल धुआँ', trendDescription: 'समय के साथ सेंसर रीडिंग।', warn: 'चेतावनी', last: 'नवीनतम', statusLabel: 'स्थिति', showPassword: 'पासवर्ड दिखाएँ', hidePassword: 'पासवर्ड छिपाएँ', legalIntro: 'यह जानकारी सुरक्षा प्रणाली और इसके संचालन संबंधी डेटा के उपयोग के बारे में है।', privacyData: 'सिस्टम सुरक्षा स्थिति दिखाने और घटनाएँ दर्ज करने के लिए सेंसर रीडिंग, उपकरण स्थिति और खाते की जानकारी का उपयोग करता है।', termsSafety: 'यह वेबसाइट रीडिंग देखने और जुड़े उपकरणों को नियंत्रित करने में मदद करती है।', termsResponsibility: 'आपात स्थिति में स्थानीय सुरक्षा निर्देशों का पालन करें। केवल इस वेबसाइट पर निर्भर न रहें।', working: 'काम हो रहा है…', commandSaved: 'बदलाव सेव हो गया।', commandFailed: 'बदलाव सेव नहीं हो सका। कनेक्शन जाँचकर फिर कोशिश करें।', minimum: 'न्यूनतम', maximum: 'अधिकतम', latest: 'नवीनतम', authFailed: 'साइन इन नहीं हो सका। जानकारी जाँचकर फिर कोशिश करें।', menuLabel: 'मेन्यू खोलें', lightMode: 'लाइट मोड', darkMode: 'डार्क मोड',
   },
   bho: {
-    brandName: 'SanketSeva',
+    brandName: 'Sanketseva',
     brandSubtitle: 'IoT रसोई गैस, आग अउर धुआं सुरक्षा प्रणाली',
     online: 'ऑनलाइन',
     offline: 'ऑफ़लाइन',

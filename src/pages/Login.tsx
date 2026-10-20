@@ -3,6 +3,7 @@ import { Lock, Mail, ArrowRight, AlertCircle, Eye, EyeOff, ShieldCheck } from 'l
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { ThemeToggleButton } from '../components/common/ThemeToggleButton';
+import { BrandWordmark } from '../components/common/BrandWordmark';
 import { LanguageSelector } from '../components/common/LanguageSelector';
 
 interface LoginProps {
@@ -61,7 +62,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal })
             <ShieldCheck className="w-4.5 h-4.5" />
           </div>
           <span className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white">
-            {t.brandName}
+            <BrandWordmark />
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -77,7 +78,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal })
             <ShieldCheck className="w-7 h-7" />
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            {t.brandName}
+            <BrandWordmark />
           </h1>
           <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1 uppercase tracking-widest font-bold">
             {t.brandSubtitle}

@@ -1,6 +1,6 @@
-# SanketSeva
+# Sanketseva
 
-SanketSeva is a web dashboard and ESP32 prototype for monitoring kitchen safety sensors and controlling connected actuators. The web client displays available live sensor readings, charts complete telemetry samples, and sends actuator commands through Firebase Realtime Database.
+Sanketseva is a web dashboard and ESP32 prototype for monitoring kitchen safety sensors and controlling connected actuators. The web client displays available live sensor readings, charts complete telemetry samples, and sends actuator commands through Firebase Realtime Database.
 
 **Repository:** [github.com/GitzAyu/Sanketseva](https://github.com/GitzAyu/Sanketseva)  
 **Live preview:** [sanketseva.pages.dev](https://sanketseva.pages.dev/)
