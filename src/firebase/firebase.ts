@@ -141,7 +141,7 @@ export async function testFirebaseDiagnostics(): Promise<FirebaseDiagnosticResul
 /** Persist a partial actuator update to the project's live actuator records. */
 export async function updateActuatorsInFirebase(
   actuators: Partial<FirebaseActuatorPayload>,
-  changedBy = auth.currentUser?.email || 'SanketSeva Web Console'
+  changedBy = auth.currentUser?.email || 'Sanketseva Web Console'
 ): Promise<{ success: boolean; error?: string; provisionedOk?: boolean; userOk?: boolean }> {
   const timestamp = Date.now();
   const commandId = `cmd-${timestamp.toString(36)}-${Math.random().toString(36).slice(2, 8)}`;

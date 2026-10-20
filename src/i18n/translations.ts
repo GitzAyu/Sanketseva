@@ -418,8 +418,8 @@ export const translations: Record<Language, TranslationDictionary> = {
     systemOfflineDesc: 'The safety device is not sending updates. Check its power and connection.',
 
     easyUnderstandingTitle: 'Safety Guide & System Explanation',
-    easyUnderstandingSubtitle: 'How GasGuard protects your kitchen from gas leaks, electrical fires, and smoke',
-    howItWorks: 'How GasGuard Works',
+    easyUnderstandingSubtitle: 'How Sanketseva protects your kitchen from gas leaks, electrical fires, and smoke',
+    howItWorks: 'How Sanketseva Works',
     safetyGuide: 'Easy Safety Guide',
     quickHelp: 'Quick Help',
 
@@ -519,7 +519,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     notificationPermissionTitle: 'Enable Browser Alerts',
     closeAlert: 'Close Alert',
     alertPopupTitle: 'HAZARD SAFETY ALERT',
-    alertPopupSubtitle: 'Immediate safety action taken by GasGuard Quantix',
+    alertPopupSubtitle: 'Immediate safety action taken by Sanketseva',
 
     gasPpmTrend: 'LPG Concentration Trend',
     smokeTrend: 'Smoke Concentration Trend',
@@ -778,7 +778,7 @@ export const translations: Record<Language, TranslationDictionary> = {
 
     easyUnderstandingTitle: 'सुरक्षा गाइड और प्रणाली विवरण',
     easyUnderstandingSubtitle: 'गैस रिसाव, बिजली की चिंगारी और धुएं से सुरक्षा',
-    howItWorks: 'GasGuard कैसे काम करता है',
+    howItWorks: 'Sanketseva कैसे काम करता है',
     safetyGuide: 'आसान सुरक्षा गाइड',
     quickHelp: 'त्वरित मदद',
 
@@ -1136,7 +1136,7 @@ export const translations: Record<Language, TranslationDictionary> = {
 
     easyUnderstandingTitle: 'सुरक्षा गाइड',
     easyUnderstandingSubtitle: 'गैस रिसाव, चिंगारी आ धुआं से बचाव',
-    howItWorks: 'GasGuard कइसे काम करेला',
+    howItWorks: 'Sanketseva कइसे काम करेला',
     safetyGuide: 'सुरक्षा नियम',
     quickHelp: 'मदद',
 

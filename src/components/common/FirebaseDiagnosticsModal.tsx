@@ -82,7 +82,7 @@ export const FirebaseDiagnosticsModal: React.FC<FirebaseDiagnosticsModalProps> =
         buzzer: device.actuators.buzzer.state,
         extinguisher: device.actuators.extinguisher.state,
       },
-      'SanketSeva Diagnostics Probe'
+      'Sanketseva Diagnostics Probe'
     );
     setTesting(false);
     if (res.success) {
@@ -126,7 +126,7 @@ export const FirebaseDiagnosticsModal: React.FC<FirebaseDiagnosticsModalProps> =
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h2 id="firebase-modal-title" className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
-                SanketSeva Firebase Sync Hub
+                Sanketseva Sync Status
               </h2>
               <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300">
                 LIVE
@@ -140,12 +140,12 @@ export const FirebaseDiagnosticsModal: React.FC<FirebaseDiagnosticsModalProps> =
 
         {/* Live Status Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
-          {/* Card 1: User Firebase Project (gasgaurd-e6009) */}
+          {/* Card 1: User database connection */}
           <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                 <Radio className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <span>Primary: {userFirebaseConfig.projectId}</span>
+                <span>Primary database connection</span>
               </span>
               <span
                 className={`px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -198,10 +198,10 @@ export const FirebaseDiagnosticsModal: React.FC<FirebaseDiagnosticsModalProps> =
               </span>
             </div>
             <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 truncate">
-              Project: {userFirebaseConfig.projectId} (Firestore)
+              Firestore connection
             </p>
             <p className="text-[10px] font-mono text-slate-400 dark:text-slate-500 truncate mt-0.5">
-              Storage: {userFirebaseConfig.storageBucket}
+              Cloud storage connection
             </p>
             <p className={`mt-2 text-[11px] p-2 rounded-xl border leading-relaxed font-medium flex items-center gap-1.5 ${isFirestoreReachable ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900' : 'text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900'}`}>
               {isFirestoreReachable ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> : <AlertTriangle className="w-3.5 h-3.5 shrink-0" />}
@@ -216,7 +216,7 @@ export const FirebaseDiagnosticsModal: React.FC<FirebaseDiagnosticsModalProps> =
             <div className="flex items-center gap-2">
               <ShieldAlert className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
               <h3 className="text-xs font-bold text-amber-950 dark:text-amber-200 uppercase tracking-wider">
-                Realtime Database security rules ({userFirebaseConfig.projectId})
+                Realtime Database security rules
               </h3>
             </div>
             <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">

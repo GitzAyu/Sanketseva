@@ -261,7 +261,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {t.signedInAs}
                   </span>
                   <p className="font-semibold text-slate-800 dark:text-slate-200 truncate mt-0.5">
-                    {userEmail || 'operator@gasguard.local'}
+                    {userEmail || 'operator@sanketseva.local'}
                   </p>
                 </div>
                 <div className="py-1">

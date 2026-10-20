@@ -159,7 +159,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal })
                     setEmail(e.target.value);
                     if (validationMsg) setValidationMsg(null);
                   }}
-                  placeholder="operator@gasguard.local"
+                  placeholder="operator@sanketseva.local"
                   className="w-full bg-slate-50 dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 focus:bg-white dark:focus:bg-slate-800 transition-all font-medium placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
               </div>

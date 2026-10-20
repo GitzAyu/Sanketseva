@@ -1,5 +1,5 @@
 {
-  "name": "GasGuard Quantix",
+  "name": "Sanketseva",
   "description": "IoT LPG gas leakage, fire, and smoke safety monitoring system with real-time telemetry, remote actuator controls, automatic mains power cut, and audible emergency notifications.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

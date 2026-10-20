@@ -2,7 +2,7 @@
 
 ## Scope
 
-SanketSeva consists of a React/TypeScript web dashboard, Firebase Authentication, Firebase Realtime Database, optional Cloud Firestore-backed features, and an ESP32 firmware prototype. The browser and ESP32 communicate through the same Realtime Database device paths. The dashboard renders only sensor entries that include a valid reading and Unix-epoch-millisecond timestamp.
+Sanketseva consists of a React/TypeScript web dashboard, Firebase Authentication, Firebase Realtime Database, optional Cloud Firestore-backed features, and an ESP32 firmware prototype. The browser and ESP32 communicate through the same Realtime Database device paths. The dashboard renders only sensor entries that include a valid reading and Unix-epoch-millisecond timestamp.
 
 ## System architecture
 

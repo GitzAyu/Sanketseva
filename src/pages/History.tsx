@@ -60,7 +60,7 @@ export const History: React.FC = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `gasguard_${activeTab}_export.csv`);
+    link.setAttribute('download', `sanketseva_${activeTab}_export.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -17,7 +17,7 @@ import {
 
 export const INITIAL_DEVICE_STATE: DeviceState = {
   info: {
-    name: 'SanketSeva Kitchen Unit 1',
+    name: 'Sanketseva Kitchen Unit 1',
     location: 'Main Commercial Kitchen / Utility Conduit',
     firmwareVersion: 'v2.4.1-PROD-ESP32',
     deviceId: 'gasguard-001',
@@ -508,7 +508,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
               buzzer: 'ON',
               ...(isFlame ? { extinguisher: 'ON' } : {}),
             },
-            'SanketSeva Automated Fail-Safe'
+            'Sanketseva Automated Fail-Safe'
           ).catch((e) => console.warn('Auto fail-safe Firebase sync note:', e));
 
           return {
@@ -757,7 +757,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
             };
         const writeResult = await updateActuatorsInFirebase(
           emergencyPayload,
-          'SanketSeva Emergency Directive'
+          'Sanketseva Emergency Directive'
         );
         if (!writeResult.success) {
           setFirebaseSyncStatus('idle');
@@ -849,7 +849,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
         {
           [target]: nextState,
         },
-        `SanketSeva Operator (${target} -> ${nextState})`
+        `Sanketseva Operator (${target} -> ${nextState})`
       );
       if (!writeResult.success) {
         setFirebaseSyncStatus('idle');
@@ -1021,7 +1021,7 @@ export const DeviceProvider: React.FC<{ children: React.ReactNode; currentUserId
           buzzer: 'OFF',
           extinguisher: 'OFF',
         },
-        'SanketSeva Reset to Safe'
+        'Sanketseva Reset to Safe'
       ).catch(() => {});
 
       setCommandFeedback({

@@ -1,4 +1,4 @@
-# SanketSeva ESP32 firmware
+# Sanketseva ESP32 firmware
 
 `SanketSevaESP32.ino` is the starting firmware for an ESP32 DevKit. It reads MQ-6 gas, MQ-2 smoke, a digital flame detector, and a DHT22, then syncs sensor values and actuator commands with the website's Realtime Database paths for device `gasguard-001`.
 

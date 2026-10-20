@@ -1,5 +1,5 @@
 /*
- * SanketSeva ESP32 firmware
+ * Sanketseva ESP32 firmware
  *
  * Realtime Database schema used by the website:
  *   devices/gasguard-001/sensors/{gas,smoke,temperature,humidity,flame}
@@ -466,7 +466,7 @@ void pollActuatorsAndSafety() {
 void setup() {
   Serial.begin(115200);
   delay(100);
-  Serial.println("Starting SanketSeva ESP32. Serial output does not print stored passwords.");
+  Serial.println("Starting Sanketseva ESP32. Serial output does not print stored passwords.");
   bootMs = millis();
 
   initializeSafeOutputs();
@@ -490,7 +490,7 @@ void setup() {
   initializeApp(firebase_client, firebase_app, getAuth(user_auth), 120000);
   firebase_app.getApp<RealtimeDatabase>(database);
   database.url(FIREBASE_DATABASE_URL);
-  Serial.println("SanketSeva ESP32 started. Valve and mains are held OFF until commanded.");
+  Serial.println("Sanketseva ESP32 started. Valve and mains are held OFF until commanded.");
 }
 
 void loop() {
