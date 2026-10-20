@@ -8,6 +8,6 @@ interface BrandWordmarkProps {
 export const BrandWordmark: React.FC<BrandWordmarkProps> = ({ className = '' }) => (
   <span aria-label="Sanketseva" className={`inline-block ${className}`}>
     <span className="text-[#0b1f3a]">Sanket</span>
-    <span className="text-emerald-600">seva</span>
+    <span className="text-orange-600">seva</span>
   </span>
 );
