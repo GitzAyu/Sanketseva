@@ -35,11 +35,13 @@ Open the local URL printed by Vite (normally `http://localhost:3000`). For Power
 
 ## Firebase setup
 
-1. In Firebase Console, enable **Authentication → Email/Password** and create an operator account.
+1. In Firebase Console, enable **Authentication → Email/Password**.
 2. Enable Realtime Database. Publish [`database.rules.json`](database.rules.json); its current rules require an authenticated user for reads and writes.
 3. Publish [`firestore.rules`](firestore.rules) to Cloud Firestore if you use the Firestore features.
 4. Configure the same Firebase web app settings in `.env.local` and Cloudflare Pages environment variables. Set `VITE_DEVICE_ID` to the device identifier used by the ESP32 (default `gasguard-001`).
 5. For hardware, create a separate Firebase Authentication account for the ESP32 and put its credentials plus Wi-Fi credentials in the ignored local `firmware/secrets.h` file. Never use the operator's password in firmware. See the firmware guide for wiring and sensor enable flags.
+
+New operator registrations use Firebase Authentication's built-in verification email. The website tells the user to click the emailed link and then sign in. The sign-in page also offers a resend verification email action for unverified accounts and a **Forgot password?** action that sends a password reset link. Set the authorized domain for your deployed site in Firebase Console under **Authentication → Settings** so Firebase action links can return to your site.
 
 The web app and firmware share this Realtime Database schema:
 

@@ -369,6 +369,8 @@ export interface TranslationDictionary {
   signIn: string; createAccount: string; operatorSignIn: string; registerOperator: string;
   emailAddress: string; password: string; enterEmail: string; enterPassword: string; minPassword: string;
   authSignInHelp: string; authRegisterHelp: string; pleaseEnterEmail: string; pleaseEnterPassword: string; passwordTooShort: string;
+  emailVerificationSent: string; verifyEmailRequired: string; resendVerification: string;
+  forgotPassword: string; passwordResetSent: string;
   backToConsole: string; lastUpdated: string; privacyTitle: string; termsTitle: string; sound: string; selectAlertSound: string;
   both: string; gasOnly: string; smokeOnly: string; trendDescription: string; warn: string; last: string; statusLabel: string;
   showPassword: string; hidePassword: string;
@@ -737,6 +739,10 @@ export const translations: Record<Language, TranslationDictionary> = {
     never: 'Never',
     signIn: 'Sign In', createAccount: 'Create Account', operatorSignIn: 'Operator Sign In', registerOperator: 'Register New Operator',
     emailAddress: 'Email Address', password: 'Password', enterEmail: 'Please enter your email address.', enterPassword: 'Please enter your password.', minPassword: 'Password must be at least 6 characters.',
+    emailVerificationSent: "A verification link has been sent to your email. Click the link to verify your account, then sign in.",
+    verifyEmailRequired: "Verify your email before entering the dashboard.",
+    resendVerification: "Resend verification email",
+    forgotPassword: 'Forgot password?', passwordResetSent: 'A password reset link has been sent to your email.',
     authSignInHelp: 'Sign in to view safety readings and controls.', authRegisterHelp: 'Create an account to access this safety system.', pleaseEnterEmail: 'Please enter your email address.', pleaseEnterPassword: 'Please enter your password.', passwordTooShort: 'Password must be at least 6 characters.',
     backToConsole: 'Back', lastUpdated: 'Last updated', privacyTitle: 'Privacy', termsTitle: 'Terms', sound: 'Sound', selectAlertSound: 'Choose alert sound', both: 'Both', gasOnly: 'Gas only', smokeOnly: 'Smoke only', trendDescription: 'Live sensor readings over time.', warn: 'Warning', last: 'Latest', statusLabel: 'Status', showPassword: 'Show password', hidePassword: 'Hide password', legalIntro: 'Information about how this safety system works and handles operational readings.', privacyData: 'The system uses sensor readings, equipment states, and account details to show safety status and record events.', termsSafety: 'This website helps you monitor readings and control connected equipment.', termsResponsibility: 'Always follow local emergency guidance. Do not rely on this website as your only safety measure.', working: 'Working…', commandSaved: 'Change saved.', commandFailed: 'Could not save the change. Check the connection and try again.', minimum: 'Min', maximum: 'Max', latest: 'Latest', authFailed: 'Sign-in failed. Check your details and try again.', menuLabel: 'Open menu', lightMode: 'Light mode', darkMode: 'Dark mode',
   },
@@ -1095,6 +1101,10 @@ export const translations: Record<Language, TranslationDictionary> = {
     eventSearchEmpty: 'कोई घटना नहीं मिली।',
     never: 'कभी नहीं',
     signIn: 'साइन इन', createAccount: 'खाता बनाएँ', operatorSignIn: 'ऑपरेटर साइन इन', registerOperator: 'नया ऑपरेटर पंजीकरण', emailAddress: 'ईमेल पता', password: 'पासवर्ड', enterEmail: 'अपना ईमेल पता दर्ज करें।', enterPassword: 'अपना पासवर्ड दर्ज करें।', minPassword: 'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।',
+    emailVerificationSent: "आपके ईमेल पर सत्यापन लिंक भेजा गया है। खाता सत्यापित करने के लिए लिंक पर क्लिक करें, फिर साइन इन करें।",
+    verifyEmailRequired: "डैशबोर्ड में जाने से पहले अपना ईमेल सत्यापित करें।",
+    resendVerification: "सत्यापन ईमेल फिर भेजें",
+    forgotPassword: 'पासवर्ड भूल गए?', passwordResetSent: 'पासवर्ड रीसेट लिंक आपके ईमेल पर भेज दिया गया है।',
     authSignInHelp: 'सुरक्षा रीडिंग और नियंत्रण देखने के लिए साइन इन करें।', authRegisterHelp: 'इस सुरक्षा सिस्टम का उपयोग करने के लिए खाता बनाएँ।', pleaseEnterEmail: 'अपना ईमेल पता दर्ज करें।', pleaseEnterPassword: 'अपना पासवर्ड दर्ज करें।', passwordTooShort: 'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।',
     backToConsole: 'वापस जाएँ', lastUpdated: 'अंतिम अपडेट', privacyTitle: 'गोपनीयता', termsTitle: 'नियम', sound: 'आवाज़', selectAlertSound: 'अलर्ट की आवाज़ चुनें', both: 'दोनों', gasOnly: 'केवल गैस', smokeOnly: 'केवल धुआँ', trendDescription: 'समय के साथ सेंसर रीडिंग।', warn: 'चेतावनी', last: 'नवीनतम', statusLabel: 'स्थिति', showPassword: 'पासवर्ड दिखाएँ', hidePassword: 'पासवर्ड छिपाएँ', legalIntro: 'यह जानकारी सुरक्षा प्रणाली और इसके संचालन संबंधी डेटा के उपयोग के बारे में है।', privacyData: 'सिस्टम सुरक्षा स्थिति दिखाने और घटनाएँ दर्ज करने के लिए सेंसर रीडिंग, उपकरण स्थिति और खाते की जानकारी का उपयोग करता है।', termsSafety: 'यह वेबसाइट रीडिंग देखने और जुड़े उपकरणों को नियंत्रित करने में मदद करती है।', termsResponsibility: 'आपात स्थिति में स्थानीय सुरक्षा निर्देशों का पालन करें। केवल इस वेबसाइट पर निर्भर न रहें।', working: 'काम हो रहा है…', commandSaved: 'बदलाव सेव हो गया।', commandFailed: 'बदलाव सेव नहीं हो सका। कनेक्शन जाँचकर फिर कोशिश करें।', minimum: 'न्यूनतम', maximum: 'अधिकतम', latest: 'नवीनतम', authFailed: 'साइन इन नहीं हो सका। जानकारी जाँचकर फिर कोशिश करें।', menuLabel: 'मेन्यू खोलें', lightMode: 'लाइट मोड', darkMode: 'डार्क मोड',
   },
@@ -1453,6 +1463,10 @@ export const translations: Record<Language, TranslationDictionary> = {
     eventSearchEmpty: 'कवनो घटना ना मिलल।',
     never: 'कबो ना',
     signIn: 'लॉगिन करीं', createAccount: 'खाता बनाईं', operatorSignIn: 'ऑपरेटर लॉगिन', registerOperator: 'नया ऑपरेटर जोड़ीं', emailAddress: 'ईमेल पता', password: 'पासवर्ड', enterEmail: 'अपना ईमेल पता डालीं।', enterPassword: 'अपना पासवर्ड डालीं।', minPassword: 'पासवर्ड कम से कम 6 अक्षर के होखे के चाहीं।',
+    emailVerificationSent: "रउरा ईमेल पर सत्यापन लिंक भेजल गइल बा। खाता सत्यापित करे खातिर लिंक पर क्लिक करीं, फेर लॉगिन करीं।",
+    verifyEmailRequired: "डैशबोर्ड पर जाए से पहिले आपन ईमेल सत्यापित करीं।",
+    resendVerification: "सत्यापन ईमेल फेर भेजीं",
+    forgotPassword: 'पासवर्ड भुला गइल बानी?', passwordResetSent: 'पासवर्ड रीसेट लिंक रउरा ईमेल पर भेजल गइल बा।',
     authSignInHelp: 'सुरक्षा रीडिंग आ कंट्रोल देखे खातिर लॉगिन करीं।', authRegisterHelp: 'सुरक्षा सिस्टम चलावे खातिर खाता बनाईं।', pleaseEnterEmail: 'अपना ईमेल पता डालीं।', pleaseEnterPassword: 'अपना पासवर्ड डालीं।', passwordTooShort: 'पासवर्ड कम से कम 6 अक्षर के होखे के चाहीं।',
     backToConsole: 'वापस जाईं', lastUpdated: 'आखिरी अपडेट', privacyTitle: 'गोपनीयता', termsTitle: 'नियम', sound: 'आवाज', selectAlertSound: 'अलर्ट के आवाज चुनीं', both: 'दूनो', gasOnly: 'खाली गैस', smokeOnly: 'खाली धुआं', trendDescription: 'समय के साथ सेंसर रीडिंग।', warn: 'चेतावनी', last: 'नया', statusLabel: 'स्थिति', showPassword: 'पासवर्ड देखीं', hidePassword: 'पासवर्ड छिपाईं', legalIntro: 'ई जानकारी सुरक्षा सिस्टम आ ओकर संचालन डेटा के बारे में बा।', privacyData: 'सिस्टम सुरक्षा स्थिति देखावे आ घटना दर्ज करे खातिर सेंसर रीडिंग, उपकरण स्थिति आ खाता जानकारी के उपयोग करेला।', termsSafety: 'ई वेबसाइट रीडिंग देखे आ जुड़ल उपकरण चलावे में मदद करेला।', termsResponsibility: 'आपातकाल में स्थानीय सुरक्षा निर्देश मानीं। खाली एह वेबसाइट पर निर्भर मत रहीं।', working: 'काम हो रहल बा…', commandSaved: 'बदलाव सहेजल गइल।', commandFailed: 'बदलाव ना सहेजल जा सकल। कनेक्शन देख के फेर कोशिश करीं।', minimum: 'न्यूनतम', maximum: 'अधिकतम', latest: 'नया', authFailed: 'लॉगिन ना हो सकल। जानकारी जाँच के फेर कोशिश करीं।', menuLabel: 'मेन्यू खोलीं', lightMode: 'लाइट मोड', darkMode: 'डार्क मोड',
   },

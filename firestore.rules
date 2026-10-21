@@ -3,15 +3,15 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Actuator commands and state are only available to authenticated operators.
     match /actuators/{document} {
-      allow read, write: if request.auth != null;
+      allow read, write: if request.auth != null && request.auth.token.email_verified == true;
     }
 
     match /devices/{deviceId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if request.auth != null && request.auth.token.email_verified == true;
     }
 
     match /events/{eventId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if request.auth != null && request.auth.token.email_verified == true;
     }
 
     // No blanket allow: all documents not listed above are denied by default.

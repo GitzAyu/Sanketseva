@@ -12,7 +12,7 @@ interface LoginProps {
 }
 
 export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal }) => {
-  const { login, register, error, loading, clearError } = useAuth();
+  const { login, register, resendVerification, resetPassword, error, isProcessing, clearError, requiresVerification } = useAuth();
   const { t } = useLanguage();
 
   const [email, setEmail] = useState('');
@@ -20,10 +20,15 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal })
   const [showPassword, setShowPassword] = useState(false);
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [validationMsg, setValidationMsg] = useState<string | null>(null);
+  const [noticeMsg, setNoticeMsg] = useState<string | null>(null);
+  const [noticeEmail, setNoticeEmail] = useState<string | null>(null);
+  const [canResendVerification, setCanResendVerification] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationMsg(null);
+    setNoticeMsg(null);
+    setNoticeEmail(null);
     clearError();
 
     const trimmedEmail = email.trim();
@@ -43,7 +48,9 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal })
     if (mode === 'signup') {
       const ok = await register(trimmedEmail, password);
       if (ok) {
-        onLoginSuccess();
+        setCanResendVerification(true);
+        setNoticeMsg(t.emailVerificationSent);
+        setNoticeEmail(trimmedEmail);
       }
     } else {
       const ok = await login(trimmedEmail, password);
@@ -93,8 +100,11 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal })
               type="button"
               onClick={() => {
                 setMode('signin');
+                setCanResendVerification(false);
                 clearError();
                 setValidationMsg(null);
+                setNoticeMsg(null);
+                setNoticeEmail(null);
               }}
               className={`flex-1 py-2 rounded-lg transition-all text-center cursor-pointer ${
                 mode === 'signin'
@@ -108,8 +118,11 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal })
               type="button"
               onClick={() => {
                 setMode('signup');
+                setCanResendVerification(false);
                 clearError();
                 setValidationMsg(null);
+                setNoticeMsg(null);
+                setNoticeEmail(null);
               }}
               className={`flex-1 py-2 rounded-lg transition-all text-center cursor-pointer ${
                 mode === 'signup'
@@ -137,8 +150,47 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal })
             <div className="mb-5 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-800 dark:text-red-300 text-xs flex flex-col gap-2">
               <div className="flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-600 dark:text-red-400" />
-                <span className="font-medium leading-relaxed">{validationMsg || t.authFailed}</span>
+                <span className="font-medium leading-relaxed">{validationMsg || (error === 'email-not-verified' ? t.verifyEmailRequired : error || t.authFailed)}</span>
               </div>
+              {requiresVerification && mode === 'signin' && (
+                <button
+                  type="button"
+                  disabled={isProcessing || !email.trim() || !password}
+                  onClick={async () => {
+                    const sent = await resendVerification(email.trim(), password);
+                    if (sent) {
+                      setNoticeMsg(t.emailVerificationSent);
+                      setNoticeEmail(email.trim());
+                    }
+                  }}
+                  className="self-start ml-6 underline font-bold disabled:opacity-50"
+                >
+                  {t.resendVerification}
+                </button>
+              )}
+            </div>
+          )}
+
+          {noticeMsg && (
+            <div role="status" aria-live="polite" className="mb-5 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-900 dark:text-emerald-200 text-sm">
+              <p className="font-semibold">{noticeMsg}</p>
+              {noticeEmail && <p className="mt-1 font-bold break-all">{noticeEmail}</p>}
+              {canResendVerification && (
+              <button
+                  type="button"
+                  disabled={isProcessing || !email.trim() || !password}
+                  onClick={async () => {
+                    const sent = await resendVerification(email.trim(), password);
+                    if (sent) {
+                      setNoticeMsg(t.emailVerificationSent);
+                      setNoticeEmail(email.trim());
+                    }
+                  }}
+                  className="block mt-2 underline font-bold disabled:opacity-50"
+                >
+                  {t.resendVerification}
+                </button>
+              )}
             </div>
           )}
 
@@ -172,7 +224,27 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal })
                   {t.password}
                 </label>
                 {mode === 'signin' && (
-                  <span className="text-[11px] text-slate-400 dark:text-slate-500">{t.minPassword}</span>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setValidationMsg(null);
+                      setNoticeMsg(null);
+                      setNoticeEmail(null);
+                      clearError();
+                      if (!email.trim()) {
+                        setValidationMsg(t.pleaseEnterEmail);
+                        return;
+                      }
+                      if (await resetPassword(email.trim())) {
+                        setNoticeMsg(t.passwordResetSent);
+                        setNoticeEmail(email.trim());
+                      }
+                    }}
+                    disabled={isProcessing}
+                    className="text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline disabled:opacity-50"
+                  >
+                    {t.forgotPassword}
+                  </button>
                 )}
               </div>
               <div className="relative">
@@ -204,10 +276,10 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onNavigateLegal })
             {/* Submit Action Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={isProcessing}
               className="w-full mt-2 py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-[0.99] text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 tracking-wider uppercase shadow-xs cursor-pointer"
             >
-              {loading ? (
+              {isProcessing ? (
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
